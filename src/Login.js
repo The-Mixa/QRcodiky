@@ -26,7 +26,7 @@ function Login() {
           navigate("/");
         }
         console.log("Invalid credentials");
-        navigate("/mainpage");
+        navigate("/");
 
 
       });
