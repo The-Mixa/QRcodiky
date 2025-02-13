@@ -95,7 +95,7 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
         ├── main_admin/
         ├── main_worker/
         └── manage.py         
-
+         ```
     3. Запустите в директории QRSystem:
    ```bash
    docker-compose -f docker-compose.frontend.yml up --build
