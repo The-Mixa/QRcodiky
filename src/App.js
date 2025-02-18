@@ -8,10 +8,15 @@ import Account from "./Account";
 import Camera from "./CameraMy";
 import Objects from "./Objects";
 import './App.css';
+import axios from 'axios';
+import { refresh } from './refresh';
 
 function App() {
   const [registered, setRegistered] = useState(false);
   const [refreshToken, setRefreshToken] = useState(null);
+  const [userData, setUserData] = useState({status: "unauth"});
+
+  
   
   function make_reg_true(){
     setRegistered(true);
@@ -21,7 +26,7 @@ function App() {
       <Routes>
 
         <Route
-          path="/signup"
+          path="signup"
           element={
           <Signup
             setRegistered={make_reg_true}
@@ -32,18 +37,19 @@ function App() {
 
 
         <Route
-          path="/login"
+          path="login"
           element={
           <Login
             setRegistered={make_reg_true}
             setRefreshToken={setRefreshToken}
+            setUserData={setUserData}
           />
           } 
         />
 
 
         <Route
-          path="/"
+          path=""
           element={
           <MainPage/>
           } 
@@ -51,20 +57,22 @@ function App() {
 
 
         <Route
-          path="/account"
+          path="account"
           element={
           <Account
             registered={registered}
             setRegistered={setRegistered}
             setRefreshToken={setRefreshToken}
             refreshToken={refreshToken}
+            userData={userData}
+            setUserData={setUserData}
           />
           }
         />
 
 
         <Route
-         path="/camera"
+         path="camera"
           element={
           <Camera/>
           }
@@ -72,7 +80,7 @@ function App() {
 
 
         <Route
-          path="/objects"
+          path="objects"
           element={
           <Objects/>
           }

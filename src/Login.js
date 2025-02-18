@@ -3,12 +3,26 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = ({setRegistered, setRefreshToken}) => {
+const Login = ({setRegistered, setRefreshToken, setUserData}) => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     identifier: '',
     password: ''
   });
+
+  var registered = false;
+  function getUserStatus(accessToken){
+    if (registered){
+        axios.get('http://localhost:8000/api/v1/auth/status/', {headers: {
+            "authorization": `Bearer ${accessToken}`
+        }})
+            .then((response) => {
+              setUserData({
+                status: response['data']['status']
+              });
+        });
+    } 
+}
 
   
 
@@ -23,10 +37,10 @@ const Login = ({setRegistered, setRefreshToken}) => {
       .then(function(response) {
         if (response['data']["error"] === undefined){
           var refresh_token = response['data']['refresh_token'];
-          
-          console.log(refresh_token);
           setRegistered();
+          registered=true;
           setRefreshToken(refresh_token);
+          getUserStatus(response['data']['access_token']);
           navigate("/account");
         }
         else{
