@@ -6,7 +6,7 @@ import Login from './Login';
 import MainPage from "./MainPage";
 import Account from "./Account";
 import Camera from "./CameraMy";
-import Objects from "./Objects";
+import Object from "./Object";
 import './App.css';
 import { refresh } from './refresh';
 import axios from 'axios';
@@ -96,9 +96,11 @@ function App() {
 
 
         <Route
-          path="objects"
+          path="get_by_qr/:objectId"
           element={
-          <Objects/>
+          <Object
+          refreshToken={refreshToken}
+          />
           }
         />
       </Routes>

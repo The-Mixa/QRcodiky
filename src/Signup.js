@@ -10,7 +10,7 @@ const Signup = ({setRegistered, setRefreshToken}) => {
     password: '',
     confirmPassword: ''
   });
-  let registered = false;
+  var registered = false;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

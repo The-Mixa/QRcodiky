@@ -1,4 +1,5 @@
 import React, {useState, useRef, useCallback} from 'react';
+import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
 import jsQR from "jsqr";
 
@@ -8,6 +9,7 @@ export default function Camera() {
     const [qrfind, setQrFind] = useState(false);
     const [codeData, setCodeData] = useState("");
     const webcamRef = useRef(null);
+    const navigate = useNavigate();
 
     const videoConstarins = {
         width: {min: 400, max:400},
@@ -35,7 +37,6 @@ export default function Camera() {
         const code = jsQR(imageData.data, imageData.width, imageData.height);
 
         if (code) {
-          console.log("QR-код найден:", code.data);
           setCodeData(code.data);
           setQrFind(true);
         } else {
