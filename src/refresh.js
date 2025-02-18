@@ -1,12 +1,11 @@
 import axios from 'axios';
 
 
-export function refresh(){
-    var refresh_token = localStorage.getItem("refresh_token");
+export function refresh(refresh_token){
     try {
-        axios.post('http://localhost:5000/refresh', {"refresh_token": refresh_token})
+        axios.post('http://localhost:8000/api/v1/auth/refresh/', {"refresh_token": refresh_token})
         .then(function(response) {
-          if (response["error"] == "NoneError"){
+          if (response["error"] === undefined){
             var access_token = response["access_token"];
             return access_token;           
           }

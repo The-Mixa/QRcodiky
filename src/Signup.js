@@ -3,13 +3,14 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
-function Signup() {
+const Signup = ({setRegistered, setRefreshToken}) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
     confirmPassword: ''
   });
+  let registered = false;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,20 +20,11 @@ function Signup() {
     e.preventDefault();
     try {
       if (formData["password"] === formData["confirmPassword"]){
-        await axios.post('http://localhost:5000/register', formData)
-        .then(function(response){
-          if (response['message'] === "Registation successful"){
-            axios.post('http://localhost:5000/login', formData)
-            .then(function(response) {
-              if (response["error"] === "NoneError"){
-                var refresh_token = response['refresh_token'];
-                localStorage.setItem("refresh_token", refresh_token);
-                console.log(refresh_token);
-                navigate("/");
-              }
-              console.log("Invalid credentials");
-      
-            });
+        await axios.post('http://localhost:8000/api/v1/auth/register/', {"username": formData['username'], "password": formData['password']})
+        .then((response) => {
+          if (response['message'] === "User registred successfully"){
+            setRegistered(true);
+            registered = true;
           }
         });
       }
@@ -42,6 +34,17 @@ function Signup() {
       
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
+    }
+
+    if (registered){
+      await axios.post('http://localhost:8000/api/v1/auth/login/', {"username": formData['username'], "password": formData['password']})
+        .then((response) => {
+          console.log(response);
+          if (response['data']['refresh_token'] !== undefined){
+            setRefreshToken(response['data']['refresh_token'])
+            navigate('/');
+          };
+        });
     }
   };
 

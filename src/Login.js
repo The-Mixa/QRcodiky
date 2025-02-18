@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Login() {
+const Login = ({setRegistered, setRefreshToken}) => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     identifier: '',
     password: ''
   });
+
+  
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -17,17 +19,19 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      axios.post('http://localhost:5000/login', credentials)
+      axios.post('http://localhost:8000/api/v1/auth/login/', credentials)
       .then(function(response) {
-        if (response["error"] === "NoneError"){
-          var refresh_token = response['refresh_token'];
-          localStorage.setItem("refresh_token", refresh_token);
+        if (response['data']["error"] === undefined){
+          var refresh_token = response['data']['refresh_token'];
+          
           console.log(refresh_token);
-          navigate("/");
+          setRegistered();
+          setRefreshToken(refresh_token);
+          navigate("/account");
         }
-        console.log("Invalid credentials");
-        navigate("/");
-
+        else{
+          alert("Invalid credentials");
+        }
 
       });
       

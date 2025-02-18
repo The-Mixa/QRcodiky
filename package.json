@@ -6,10 +6,15 @@
     "@userfront/toolkit": "^1.0.9",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
+    "jsqr": "^1.4.0",
+    "jsqrcode": "^0.0.7",
+    "package.json": "^2.0.1",
+    "qr-scanner": "^1.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.6.0",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "react-webcam": "^7.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

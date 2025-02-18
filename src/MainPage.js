@@ -12,10 +12,6 @@ export default function MainPage() {
         <NavLink to="/camera">
             Камера
         </NavLink>
-        <br></br>
-        <NavLink to="/objects">
-            Объекты
-        </NavLink>
     </div>
 );
 }
