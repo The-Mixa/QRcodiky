@@ -12,6 +12,7 @@ export default function Account({registered, setRegistered, refreshToken, setRef
                 setRefreshToken(null);
                 setRegistered(false);
                 setUserData({status: 'unauth'});
+                localStorage.setItem(refreshToken, null);
             }
             });
         }
@@ -21,8 +22,6 @@ export default function Account({registered, setRegistered, refreshToken, setRef
 
     };
     
-    console.log(userData);
-
     return (
         <div style={{margin: 40 + 'px'}}>
         <h1>Аккаунт</h1>

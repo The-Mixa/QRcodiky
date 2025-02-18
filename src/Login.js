@@ -40,6 +40,7 @@ const Login = ({setRegistered, setRefreshToken, setUserData}) => {
           setRegistered();
           registered=true;
           setRefreshToken(refresh_token);
+          localStorage.setItem("refresh_token", refresh_token);
           getUserStatus(response['data']['access_token']);
           navigate("/account");
         }

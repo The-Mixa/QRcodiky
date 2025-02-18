@@ -1,5 +1,5 @@
 // App.js
-import React , {useState} from 'react';
+import React , {useState, useEffect} from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Signup from './Signup';
 import Login from './Login';
@@ -8,15 +8,31 @@ import Account from "./Account";
 import Camera from "./CameraMy";
 import Objects from "./Objects";
 import './App.css';
-import axios from 'axios';
 import { refresh } from './refresh';
+import axios from 'axios';
 
 function App() {
   const [registered, setRegistered] = useState(false);
   const [refreshToken, setRefreshToken] = useState(null);
   const [userData, setUserData] = useState({status: "unauth"});
 
-  
+  useEffect(() => {
+  if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== null){
+    setRefreshToken(localStorage.getItem("refresh_token"));
+    setRegistered(true);
+    var access_token = refresh(localStorage.getItem("refresh_token"));
+    if (access_token != null){
+    axios.get('http://localhost:8000/api/v1/auth/status/', {headers: {
+        "authorization": `Bearer ${access_token}`
+      }})
+          .then((response) => {
+            setUserData({
+              status: response['data']['status']
+            });
+      });
+    }
+    }
+  }, []);
   
   function make_reg_true(){
     setRegistered(true);
