@@ -160,7 +160,7 @@ const WorkImageForm = ({ workId, refreshToken }) => {
               style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}
             >
               <img 
-                src={image.preview || image.image} 
+                src={image.preview || "http://127.0.0.1:8000" + image.image} 
                 alt={`Изображение ${image.id}`} 
                 style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '5px' }} 
               />
@@ -182,6 +182,7 @@ const ObjectDetails = ({ refreshToken }) => {
   const [workHistory, setWorkHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [curWorkId, setCurWorkId] = useState(null);
 
   // Функция для получения access_token
   const getAccessToken = () => {
@@ -213,6 +214,7 @@ const ObjectDetails = ({ refreshToken }) => {
 
       const data = await response.json();
       setObjectStatus(data);
+      setCurWorkId(data.work.id || null);
     } catch (error) {
       setError(error.message);
     }
@@ -281,7 +283,7 @@ const ObjectDetails = ({ refreshToken }) => {
           <p>Объект оценен</p>
           }
           {objectStatus.status === "work" &&
-          <WorkImageForm workId={1} refreshToken={refreshToken}/>
+          <WorkImageForm workId={curWorkId} refreshToken={refreshToken}/>
           }
           
           <p>Название: {objectStatus.object.name}</p>
