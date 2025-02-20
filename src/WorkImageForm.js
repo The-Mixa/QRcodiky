@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import { refresh } from './refresh';
 import axios from "axios";
 import './App.css';
@@ -12,11 +13,11 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
     const [error, setError] = useState(null);
     const [uploading, setUploading] = useState(false);
 
-    
+    const navigate = useNavigate();
   
     const getAuthHeader = async () => {
       try {
-        const accessToken = await refresh(refreshToken);
+        const accessToken = refresh(refreshToken);
         return {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -87,7 +88,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
           authConfig
         );
   
-        alert('Работа успешно завершена!');
+        navigate(-1);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -103,24 +104,25 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
           <div className="form-group">
             <label className="form-label">
               Описание работы:
-              <textarea
+            </label>
+            <textarea
                 className="form-textarea"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-            </label>
           </div>
     
           <div className="file-input-container">
             <label className="file-input-label">
               Выберите изображение:
-              <input
+              
+            </label>
+            <input
                 className="file-input"
                 type="file"
                 onChange={(e) => setSelectedFile(e.target.files[0])}
                 accept="image/*"
               />
-            </label>
             <button 
               className="upload-button"
               type="button"
@@ -141,6 +143,8 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
         </form>
     
         <div className="image-gallery">
+          {!images ? <p>Изображений нет</p>  :
+          <>
           <h2 className="gallery-title">Загруженные изображения:</h2>
           <div className="image-grid">
             {images.map(image => (
@@ -156,6 +160,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
               </div>
             ))}
           </div>
+          </>}
         </div>
       </div>
     );

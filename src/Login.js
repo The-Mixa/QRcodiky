@@ -20,7 +20,7 @@ const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
               if (response['data']['status'] === "user")
                 setUserData(false);
               else
-                setUserData(true)
+                setUserData(true);
         });
     } 
   }
@@ -43,7 +43,7 @@ const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
           setRefreshToken(refresh_token);
           localStorage.setItem("refresh_token", refresh_token);
           getUserStatus(response['data']['access_token']);
-          navigate("/account");
+          navigate("/");
         }
         else{
           alert("Invalid credentials");

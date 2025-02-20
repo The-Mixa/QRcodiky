@@ -6,7 +6,8 @@ export default function Account({ onLogOut, registered, userIsStaff, setTitle })
     setTitle("Аккаунт");
 
     return (
-        <>
+        <div className='centr-vert'>
+
             {registered && userIsStaff &&
                 <h1 className="admin">Вы администратор</h1>
             }
@@ -27,11 +28,6 @@ export default function Account({ onLogOut, registered, userIsStaff, setTitle })
             {registered &&
                 <button className="button" onClick={onLogOut}>Выйти из аккаунта</button>
             }
-            <br />
-            <br />
-            <NavLink className="link" to="/">
-                На главную
-            </NavLink>
-        </>
+        </div>
     );
 }

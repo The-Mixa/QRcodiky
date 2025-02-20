@@ -1,6 +1,5 @@
-// App.js
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'; // Добавлен Link
 import Signup from './Signup';
 import Login from './Login';
 import MainPage from "./MainPage";
@@ -16,10 +15,12 @@ function App() {
   const [registered, setRegistered] = useState(false);
   const [refreshToken, setRefreshToken] = useState(null);
   const [userIsStaf, setUserIsStaff] = useState(false);
-  const [title, setTitle] = useState('Главная страница'); // Состояние для заголовка
+  const [title, setTitle] = useState('Главная страница');
+
+  const homePicAdres = "https://example.com/home-icon.png"; // Временная иконка
 
   useEffect(() => {
-    if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== null) {
+    if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null') {
       setRefreshToken(localStorage.getItem("refresh_token"));
       setRegistered(true);
       var access_token = refresh(localStorage.getItem("refresh_token"));
@@ -46,11 +47,10 @@ function App() {
           refresh_token: refreshToken
         });
 
-        // Сбрасываем состояние
         setRefreshToken(null);
         setRegistered(false);
         setUserIsStaff(false);
-        localStorage.setItem("refresh_token", null); // Очищаем refresh_token из localStorage
+        localStorage.setItem("refresh_token", null);
       } catch (error) {
         console.error('Ошибка при выходе:', error);
       }
@@ -64,7 +64,10 @@ function App() {
   return (
     <>
       <div className="header">
-        <h3>{title}</h3> {/* Отображаем заголовок */}
+        {/* <Link to="/" className="home-button">
+          <img src={homePicAdres} alt="Home" className="home-icon" />
+        </Link> */}
+        <h3>{title}</h3>
       </div>
       <Router>
         <Routes>
@@ -74,7 +77,7 @@ function App() {
               <WorkDetails
                 isStaff={userIsStaf}
                 refreshToken={refreshToken}
-                setTitle={setTitle} // Передаем setTitle в компонент
+                setTitle={setTitle}
               />
             }
           />
@@ -85,7 +88,8 @@ function App() {
               <Signup
                 setRegistered={make_reg_true}
                 setRefreshToken={setRefreshToken}
-                setTitle={setTitle} // Передаем setTitle в компонент
+                setTitle={setTitle}
+                registered={registered}
               />
             }
           />
@@ -97,7 +101,7 @@ function App() {
                 setRegistered={make_reg_true}
                 setRefreshToken={setRefreshToken}
                 setUserData={setUserIsStaff}
-                setTitle={setTitle} // Передаем setTitle в компонент
+                setTitle={setTitle}
               />
             }
           />
@@ -113,19 +117,7 @@ function App() {
                 setRefreshToken={setRefreshToken}
                 setUserData={setUserIsStaff}
                 onLogOut={handleLogOut}
-                setTitle={setTitle} // Передаем setTitle в компонент
-              />
-            }
-          />
-
-          <Route
-            path="account"
-            element={
-              <Account
-                registered={registered}
-                userIsStaff={userIsStaf}
-                onLogOut={handleLogOut}
-                setTitle={setTitle} // Передаем setTitle в компонент
+                setTitle={setTitle}
               />
             }
           />
@@ -134,7 +126,7 @@ function App() {
             path="camera"
             element={
               <Camera
-                setTitle={setTitle} // Передаем setTitle в компонент
+                setTitle={setTitle}
               />
             }
           />
@@ -145,7 +137,9 @@ function App() {
               <Object
                 refreshToken={refreshToken}
                 isStaff={userIsStaf}
-                setTitle={setTitle} // Передаем setTitle в компонент
+                setTitle={setTitle}
+                setUserIsStaff={setUserIsStaff}
+                registered={registered}
               />
             }
           />

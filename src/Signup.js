@@ -3,29 +3,41 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
-const Signup = ({setRegistered, setRefreshToken}) => {
+const Signup = ({setRegistered, setRefreshToken, registered}) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
     confirmPassword: ''
   });
-  var registered = false;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const logIn = async () => {
+    await axios.post('http://localhost:8000/api/v1/auth/login/', {"username": formData['username'], "password": formData['password']})
+        .then((response) => {
+          console.log(response);
+          if (response['data']['refresh_token'] !== undefined){
+            setRefreshToken(response['data']['refresh_token']);
+            localStorage.setItem("refresh_token", response['data']['refresh_token']);
+            navigate('/');
+          };
+        });
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (formData["password"] === formData["confirmPassword"]){
         await axios.post('http://localhost:8000/api/v1/auth/register/', {"username": formData['username'], "password": formData['password']})
-        .then((response) => {
-          if (response['message'] === "User registred successfully"){
+        .then(async (response) => {
+          if (response['data']['message'] === "User registred successfully"){
             setRegistered(true);
-            registered = true;
+            await logIn();
           }
+          
         });
       }
       else{
@@ -35,17 +47,7 @@ const Signup = ({setRegistered, setRefreshToken}) => {
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
     }
-
-    if (registered){
-      await axios.post('http://localhost:8000/api/v1/auth/login/', {"username": formData['username'], "password": formData['password']})
-        .then((response) => {
-          console.log(response);
-          if (response['data']['refresh_token'] !== undefined){
-            setRefreshToken(response['data']['refresh_token'])
-            navigate('/');
-          };
-        });
-    }
+    
   };
 
   return (

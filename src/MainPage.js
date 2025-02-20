@@ -13,7 +13,7 @@ export default function MainPage({ registered, userIsStaff, onLogOut, setTitle }
         <NavLink to="/camera" className="link">
           Камера
         </NavLink>
-
+        
         <br />
         <button onClick={onLogOut} className='link grey'>Выйти из аккаунта</button>
         </div>
