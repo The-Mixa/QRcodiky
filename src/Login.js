@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = ({setRegistered, setRefreshToken, setUserData}) => {
+const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     identifier: '',
@@ -17,14 +17,15 @@ const Login = ({setRegistered, setRefreshToken, setUserData}) => {
             "authorization": `Bearer ${accessToken}`
         }})
             .then((response) => {
-              setUserData({
-                status: response['data']['status']
-              });
+              if (response['data']['status'] === "user")
+                setUserData(false);
+              else
+                setUserData(true)
         });
     } 
-}
+  }
 
-  
+  setTitle("Вход в аккаунт");
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });

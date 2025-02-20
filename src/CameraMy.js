@@ -4,12 +4,13 @@ import Webcam from "react-webcam";
 import jsQR from "jsqr";
 
 
-export default function Camera() {
+export default function Camera({setTitle}) {
     const [img, setImg] = useState(null);
     const [qrfind, setQrFind] = useState(false);
     const [codeData, setCodeData] = useState("");
     const webcamRef = useRef(null);
     const navigate = useNavigate();
+    setTitle("Сканирование QR")
 
     const videoConstarins = {
         width: {min: 400, max:400},
@@ -49,28 +50,31 @@ export default function Camera() {
     
     return (
         <div>
-        <h1>
-            Камера
-        </h1>
+        
         {img === null ? (
-        <>
+        <div className='camera-container'>
             <Webcam
                 audio={false}
                 screenshotFormat='image/jpeg'
                 ref={webcamRef}
                 videoConstraints={videoConstarins}
             />
-
-          <button onClick={capture}>Capture photo</button>
-        </>
+          <center>
+            <button className='link ' onClick={capture}>Сканировать</button>
+          </center>
+        </div>
       ) : (
-        <>
-          <img src={img} alt="screenshot" />
-          <button onClick={() => setImg(null)}>Retake</button>
+        <div className="camera-container">
+          <img  src={img} alt="screenshot" />
+          <center>
+            <button className='link' onClick={() => setImg(null)}>Заново</button>
+          </center>
           {qrfind && 
           <>
             <h1>QR-code найден</h1>
-            <a href={codeData}>Ссылка на объект</a>
+            <center>
+              <a className='link' href={codeData}>Ссылка на объект</a>
+            </center>
           </>
           
           }
@@ -79,7 +83,7 @@ export default function Camera() {
           }
           
 
-        </>
+        </div>
       )}
         </div>
     );
