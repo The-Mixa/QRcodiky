@@ -1,5 +1,5 @@
-import React, { use, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import WorkList from './WorkList';
 import { refresh } from './refresh';
@@ -28,6 +28,23 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
     }
   };
 
+  useEffect(() =>{
+    var access_token = refresh(localStorage.getItem("refresh_token"));
+    if (access_token != null) {
+      axios.get('http://localhost:8000/api/v1/auth/status/', {
+        headers: {
+          "authorization": `Bearer ${access_token}`
+        }
+      })
+        .then((response) => {
+          if (response['data']['status'] === "user")
+            setUserIsStaff(false);
+          else
+            setUserIsStaff(true);
+        });
+    }
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,11 +72,16 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
           const userWorksResponse = await axios.get(
             `http://127.0.0.1:8000/api/v1/user/works/`,
             authConfig
-          );
+          ).catch((error) => {
+            if (error.status === 404){
+              console.log(":(");
+            }
+          })
           setUserWorks(userWorksResponse.data.filter((work) => work.end_time === null && work.review === null));
         }
       } catch (error) {
-        setError(error.message);
+        setError(error.status);
+        setTitle("Ошибка");
       } finally {
         setLoading(false);
       }
@@ -68,29 +90,26 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
     fetchData();
   }, [objectId, refreshToken]);
 
-  useEffect(() =>{
-    var access_token = refresh(localStorage.getItem("refresh_token"));
-    if (access_token != null) {
-      axios.get('http://localhost:8000/api/v1/auth/status/', {
-        headers: {
-          "authorization": `Bearer ${access_token}`
-        }
-      })
-        .then((response) => {
-          if (response['data']['status'] === "user")
-            setUserIsStaff(false);
-          else
-            setUserIsStaff(true);
-        });
-    }
-  }, []);
+  
 
   if (loading) {
     return <div>Загрузка...</div>;
   }
 
   if (error) {
-    return <div>Ошибка: {error}</div>;
+    return (
+    <div>
+      <center>
+        {error == 404 && <p>Объекта не существует</p>}
+        {error == 403 && <p>У вас нету доступа к этому объекту</p>}
+        <p>Обратитесь к администратору</p>
+        
+        <NavLink to="/" className="link" >
+          На главную
+        </NavLink>
+      </center>
+    </div>
+    );
   }
 
   return (
