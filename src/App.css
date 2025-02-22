@@ -4,10 +4,11 @@ form{
   margin: 10px;
   margin-top: 50px;
   max-width: 500px;
-  background-color: rgb(183, 183, 205);
+  background-color: #2196FD;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0px 0px 20px 0px rgba(34, 60, 80, 0.4);
+  color: white;
 
 }
 
@@ -41,4 +42,415 @@ form button{
   width: calc(100% - 20px);
   text-align: center;
   text-decoration: dashed;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #FFFFFF; /* Белый фон */
+  color: #3A3743; /* Темный текст */
+  overflow-x: hidden;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.header h3{
+  width: 100%;
+}
+.header {
+  background-color: #2196FD;
+  color: white;
+  padding: 15px 0;
+  max-width: 100vw;
+
+  text-align: center;
+  font-size: 24px;
+  position: relative; /* Добавлено для позиционирования кнопки */
+}
+
+.home-button {
+  position: absolute;
+  left: 20px;
+  top: 5px;
+  transform: translateY(-50%);
+  padding: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.home-icon {
+  width: 30px;
+  height: 30px;
+  filter: invert(1); /* Делает иконку белой */
+}
+
+.button {
+  background-color: #2196FD; /* Синий цвет кнопки */
+  color: #FFFFFF; /* Цвет текста на кнопке */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #90CBFE; /* Светлый цвет при наведении */
+}
+
+.admin {
+  color: #90CBFE; /* Цвет для администраторов */
+}
+
+.user {
+  color: #3A3743; /* Цвет для обычных пользователей */
+}
+
+.unauthorized {
+  color: red; /* Цвет для неавторизованных пользователей */
+}
+
+
+.header {
+  background-color: #2196FD; /* Синий фон */
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень для header */
+  width: 100vw;
+  min-width: 100vw;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.header h3 {
+  color: #FFFFFF; /* Белый текст */
+  margin: 0; /* Убираем отступы */
+}
+
+.link {
+  background-color: #2196FD; /* Синяя кнопка */
+  color: #FFFFFF; /* Белый текст */
+  padding: 10px 20px; /* Отступы */
+  border: none; /* Убираем рамку */
+  border-radius: 10px; /* Закругление углов */
+  text-decoration: none; /* Убираем подчеркивание */
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Тень для кнопки */
+  transition: background-color 0.3s, box-shadow 0.3s; /* Плавный переход */
+  min-width: 200px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.link:hover {
+  background-color: #1976D2; /* Темнее при наведении */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* Увеличенная тень при наведении */
+}
+
+.grey{
+  background-color: #9D9BA1;
+  min-width: 240px;
+
+}
+
+.grey:hover{
+  background-color: #7d7c80;
+}
+
+.centr-vert{
+  display:  flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 60vh;
+  justify-content: center;
+}
+
+.camera-container{
+  border-radius: 15px;
+  margin: 15px;
+  width: calc(100vw - 30px );
+  margin-top: 15vh
+}
+
+.camera-container video, .camera-container img{
+  max-width: calc(100vw - 30px);
+  border-radius: 15px;
+}
+
+.center-align{
+  margin: auto;
+}
+
+/* WorkList.css */
+
+/* Основной контейнер */
+.work-list-container {
+  padding: 20px;
+  background-color: #FFFFFF; /* Основной цвет фона */
+  border-radius: 12px;
+}
+
+/* Заголовок */
+.work-list-title {
+  color: #3A3743; /* Белый текст */
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Список работ */
+.work-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Элемент работы */
+.work-item {
+  background-color: #C2E2FE; /* Белый фон */
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+
+}
+
+.work-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Ссылка на работу */
+.work-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  padding: 15px;
+}
+
+/* Контент работы */
+.work-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Название работы */
+.work-name {
+  color: #2196FD; /* Синий цвет */
+  font-size: 20px;
+  margin: 0;
+}
+
+/* Описание работы */
+.work-description {
+  color: #3A3743; /* Основной цвет текста */
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Сообщение об отсутствии работ */
+.work-list-empty {
+  color: #90CBFE; /* Светло-синий цвет */
+  text-align: center;
+  font-size: 18px;
+}
+
+.work-details-container {
+  background-color: white;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.work-details-title {
+  color: #3A3743;
+  font-size: 28px;
+  margin-bottom: 32px;
+}
+
+.staff-review-section {
+  background-color: #C2E2FE;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.comment-label {
+  display: block;
+  color: #3A3743;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.comment-text {
+  color: #3A3743;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.textarea-comment {
+  min-width: calc(100vw - 115px);
+  padding: 12px;
+  border: 2px solid #2196FD;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  min-height: 100px;
+  resize: vertical;
+}
+
+
+
+.rate-button {
+  background-color: #2196FD;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.rate-button:hover {
+  background-color: #1976D2;
+}
+
+.work-image-form {
+  background-color: white;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.form-error {
+  color: #dc3545;
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f8d7da;
+  border-radius: 4px;
+}
+
+.work-form {
+  margin-bottom: 32px;
+}
+
+.form-label {
+  display: block;
+  color: #3A3743;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-textarea {
+  width: calc(100% - 30px);
+  padding: 12px;
+  border: 2px solid #2196FD;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.file-input-container {
+  margin-bottom: 16px;
+}
+
+.file-input-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-input {
+  padding: 8px;
+  border: 2px solid #2196FD;
+  border-radius: 6px;
+  width: calc(100% - 20px);
+}
+
+.upload-button {
+  background-color: #2196FD;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.upload-button:disabled {
+  background-color: #90CBFE;
+  cursor: not-allowed;
+}
+
+.submit-button {
+  background-color: grey;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.submit-button:disabled {
+  background-color: #90CBFE;
+  cursor: not-allowed;
+}
+
+.image-gallery {
+  margin-top: 32px;
+}
+
+.gallery-title {
+  color: #3A3743;
+  margin-bottom: 16px;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.image-card {
+  background-color: #C2E2FE;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.image-card:hover {
+  transform: translateY(-2px);
+}
+
+.image-preview {
+  width: 100%;
+  object-fit: cover;
+}
+
+.upload-date {
+  color: #3A3743;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.rating-container {
+  margin: 16px 0;
+}
+
+.star {
+  cursor: pointer;
+  font-size: 24px;
+  color: #90CBFE;
+  transition: color 0.2s;
+  margin-right: 8px;
+}
+
+.star.active {
+  color: #2196FD;
+}
+
+.star:hover {
+  color: #1976D2;
 }

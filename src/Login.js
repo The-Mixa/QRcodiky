@@ -3,12 +3,29 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Login() {
+const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     identifier: '',
     password: ''
   });
+
+  var registered = false;
+  function getUserStatus(accessToken){
+    if (registered){
+        axios.get('http://localhost:8000/api/v1/auth/status/', {headers: {
+            "authorization": `Bearer ${accessToken}`
+        }})
+            .then((response) => {
+              if (response['data']['status'] === "user")
+                setUserData(false);
+              else
+                setUserData(true);
+        });
+    } 
+  }
+
+  setTitle("Вход в аккаунт");
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -17,17 +34,20 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      axios.post('http://localhost:5000/login', credentials)
+      axios.post('http://localhost:8000/api/v1/auth/login/', credentials)
       .then(function(response) {
-        if (response["error"] === "NoneError"){
-          var refresh_token = response['refresh_token'];
+        if (response['data']["error"] === undefined){
+          var refresh_token = response['data']['refresh_token'];
+          setRegistered();
+          registered=true;
+          setRefreshToken(refresh_token);
           localStorage.setItem("refresh_token", refresh_token);
-          console.log(refresh_token);
+          getUserStatus(response['data']['access_token']);
           navigate("/");
         }
-        console.log("Invalid credentials");
-        navigate("/mainpage");
-
+        else{
+          alert("Invalid credentials");
+        }
 
       });
       
