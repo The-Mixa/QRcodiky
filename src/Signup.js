@@ -16,7 +16,7 @@ const Signup = ({setRegistered, setRefreshToken, registered}) => {
   };
 
   const logIn = async () => {
-    await axios.post(`${{process.env.REACT_APP_HOST}:8000/api/v1/auth/login/`, {"username": formData['username'], "password": formData['password']})
+    await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/login/`, {"username": formData['username'], "password": formData['password']})
         .then((response) => {
           console.log(response);
           if (response['data']['refresh_token'] !== undefined){
@@ -31,7 +31,7 @@ const Signup = ({setRegistered, setRefreshToken, registered}) => {
     e.preventDefault();
     try {
       if (formData["password"] === formData["confirmPassword"]){
-        await axios.post(`${{process.env.REACT_APP_HOST}:8000/api/v1/auth/register/`, {"username": formData['username'], "password": formData['password']})
+        await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/register/`, {"username": formData['username'], "password": formData['password']})
         .then(async (response) => {
           if (response['data']['message'] === "User registred successfully"){
             setRegistered(true);

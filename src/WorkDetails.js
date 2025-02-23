@@ -36,7 +36,7 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
       try {
         const authConfig = await getAuthHeader();
         const response = await axios.get(
-          `${{process.env.REACT_APP_HOST}:8000/api/v1/info/${workId}/`,
+          `${process.env.REACT_APP_HOST}/api/v1/info/${workId}/`,
           authConfig
         );
         setWork(response.data);
@@ -57,7 +57,7 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
     try {
       const authConfig = await getAuthHeader();
       await axios.post(
-        `${{process.env.REACT_APP_HOST}:8000/api/v1/review/${workId}/`,
+        `${process.env.REACT_APP_HOST}/api/v1/review/${workId}/`,
         { rating: rating,
           work: Number(workId),
           comment: description

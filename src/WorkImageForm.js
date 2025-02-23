@@ -34,7 +34,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
         try {
           const authConfig = await getAuthHeader();
           const response = await axios.get(
-            `${{process.env.REACT_APP_HOST}:8000/api/v1/image_work/${workId}/list/`,
+            `${process.env.REACT_APP_HOST}/api/v1/image_work/${workId}/list/`,
             authConfig
           );
           setImages(response.data);
@@ -57,7 +57,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
         formData.append('image', selectedFile);
   
         const response = await axios.post(
-          `${{process.env.REACT_APP_HOST}:8000/api/v1/image_work/${workId}/`,
+          `${process.env.REACT_APP_HOST}/api/v1/image_work/${workId}/`,
           formData,
           authConfig
         );
@@ -83,7 +83,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
       try {
         const authConfig = await getAuthHeader();
         await axios.post(
-          `${{process.env.REACT_APP_HOST}:8000/api/v1/end/`,
+          `${process.env.REACT_APP_HOST}/api/v1/end/`,
           { work_id: Number(workId), description: description },
           authConfig
         );

@@ -31,7 +31,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
   useEffect(() =>{
     var access_token = refresh(localStorage.getItem("refresh_token"));
     if (access_token != null) {
-      axios.get(`${{process.env.REACT_APP_HOST}:8000/api/v1/auth/status/`, {
+      axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {
         headers: {
           "authorization": `Bearer ${access_token}`
         }
@@ -50,7 +50,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
       try {
         const authConfig = await getAuthHeader();
         const statusResponse = await axios.get(
-          `${{process.env.REACT_APP_HOST}:8000/api/v1/object/status/${objectId}/`,
+          `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
           authConfig
         );
         setObjectStatus(statusResponse.data);
@@ -61,7 +61,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
           console.log(1);
 
           const worksResponse = await axios.get(
-            `${{process.env.REACT_APP_HOST}:8000/api/v1/object/work-history/${objectId}/`,
+            `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
             authConfig
           );
 
@@ -70,7 +70,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
           console.log(2);
 
           const userWorksResponse = await axios.get(
-            `${{process.env.REACT_APP_HOST}:8000/api/v1/user/works/`,
+            `${process.env.REACT_APP_HOST}/api/v1/user/works/`,
             authConfig
           ).catch((error) => {
             if (error.status === 404){
