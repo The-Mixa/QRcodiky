@@ -36,7 +36,7 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
       try {
         const authConfig = await getAuthHeader();
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/v1/info/${workId}/`,
+          `http://${process.env.HOST}:8000/api/v1/info/${workId}/`,
           authConfig
         );
         setWork(response.data);
@@ -57,7 +57,7 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
     try {
       const authConfig = await getAuthHeader();
       await axios.post(
-        `http://127.0.0.1:8000/api/v1/review/${workId}/`,
+        `http://${process.env.HOST}:8000/api/v1/review/${workId}/`,
         { rating: rating,
           work: Number(workId),
           comment: description
