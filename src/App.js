@@ -17,7 +17,6 @@ function App() {
   const [userIsStaf, setUserIsStaff] = useState(false);
   const [title, setTitle] = useState('Главная страница');
 
-  const homePicAdres = "https://example.com/home-icon.png"; // Временная иконка
 
   useEffect(() => {
     if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null') {
@@ -25,7 +24,7 @@ function App() {
       setRegistered(true);
       var access_token = refresh(localStorage.getItem("refresh_token"));
       if (access_token != null) {
-        axios.get('http://localhost:8000/api/v1/auth/status/', {
+        axios.get(`http://${process.env.HOST}:8000/api/v1/auth/status/`, {
           headers: {
             "authorization": `Bearer ${access_token}`
           }
@@ -43,7 +42,7 @@ function App() {
   const handleLogOut = async () => {
     if (refreshToken) {
       try {
-        await axios.post('http://localhost:8000/api/v1/auth/logout/', {
+        await axios.post(`http://${process.env.HOST}:8000/api/v1/auth/logout/`, {
           refresh_token: refreshToken
         });
 
