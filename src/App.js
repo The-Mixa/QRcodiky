@@ -24,7 +24,7 @@ function App() {
       setRegistered(true);
       var access_token = refresh(localStorage.getItem("refresh_token"));
       if (access_token != null) {
-        axios.get(`http://${process.env.REACT_APP_HOST}:8000/api/v1/auth/status/`, {
+        axios.get(`${{process.env.REACT_APP_HOST}:8000/api/v1/auth/status/`, {
           headers: {
             "authorization": `Bearer ${access_token}`
           }
@@ -42,7 +42,7 @@ function App() {
   const handleLogOut = async () => {
     if (refreshToken) {
       try {
-        await axios.post(`http://${process.env.REACT_APP_HOST}:8000/api/v1/auth/logout/`, {
+        await axios.post(`${{process.env.REACT_APP_HOST}:8000/api/v1/auth/logout/`, {
           refresh_token: refreshToken
         });
 
