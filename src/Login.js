@@ -13,7 +13,7 @@ const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
   var registered = false;
   function getUserStatus(accessToken){
     if (registered){
-        axios.get(`http://${process.env.HOST}:8000/api/v1/auth/status/`, {headers: {
+        axios.get(`http://${process.env.REACT_APP_HOST}:8000/api/v1/auth/status/`, {headers: {
             "authorization": `Bearer ${accessToken}`
         }})
             .then((response) => {
@@ -34,7 +34,7 @@ const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      axios.post(`http://${process.env.HOST}:8000/api/v1/auth/login/`, credentials)
+      axios.post(`http://${process.env.REACT_APP_HOST}:8000/api/v1/auth/login/`, credentials)
       .then(function(response) {
         if (response['data']["error"] === undefined){
           var refresh_token = response['data']['refresh_token'];

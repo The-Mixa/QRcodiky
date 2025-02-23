@@ -34,7 +34,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
         try {
           const authConfig = await getAuthHeader();
           const response = await axios.get(
-            `http://${process.env.HOST}:8000/api/v1/image_work/${workId}/list/`,
+            `http://${process.env.REACT_APP_HOST}:8000/api/v1/image_work/${workId}/list/`,
             authConfig
           );
           setImages(response.data);
@@ -57,7 +57,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
         formData.append('image', selectedFile);
   
         const response = await axios.post(
-          `http://${process.env.HOST}:8000/api/v1/image_work/${workId}/`,
+          `http://${process.env.REACT_APP_HOST}:8000/api/v1/image_work/${workId}/`,
           formData,
           authConfig
         );
@@ -83,7 +83,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
       try {
         const authConfig = await getAuthHeader();
         await axios.post(
-          `http://${process.env.HOST}:8000/api/v1/end/`,
+          `http://${process.env.REACT_APP_HOST}:8000/api/v1/end/`,
           { work_id: Number(workId), description: description },
           authConfig
         );
@@ -151,7 +151,7 @@ const WorkImageForm = ({ workDescription, workId, refreshToken, setTitle }) => {
               <div className="image-card" key={image.id}>
                 <img 
                   className="image-preview"
-                  src={image.preview || "http://${process.env.HOST}:8000" + image.image} 
+                  src={image.preview || "http://${process.env.REACT_APP_HOST}:8000" + image.image} 
                   alt={`Изображение ${image.id}`}
                 />
                 <p className="upload-date">

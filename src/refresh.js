@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 export function refresh(refresh_token){
-  axios.post(`http://${process.env.HOST}:8000/api/v1/auth/refresh/`, {"refresh_token": refresh_token})
+  axios.post(`http://${process.env.REACT_APP_HOST}:8000/api/v1/auth/refresh/`, {"refresh_token": refresh_token})
   .then((response) => {
     if (response['data']["access_token"] !== undefined){
       sessionStorage.setItem("access_token", response['data']["access_token"]);
