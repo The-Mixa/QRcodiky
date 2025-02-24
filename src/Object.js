@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import WorkList from './WorkList';
+import WorkImageForm from './WorkImageForm';
 import { refresh } from './refresh';
 
 const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsStaff }) => {
   const navigate = useNavigate();
-  if (!registered)
-    navigate('/');
   const { objectId } = useParams();
   const [objectStatus, setObjectStatus] = useState(null);
-  const [userWorks, setUserWorks] = useState([]);
+  const [activeTask, setActiveTask] = useState(null);
+  const [availableTasks, setAvailableTasks] = useState([]);
   const [allWorks, setAllWorks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,37 +18,38 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
   const getAuthHeader = async () => {
     try {
       const accessToken = refresh(refreshToken);
-      return {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        }
-      };
+      return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
       throw new Error('Ошибка авторизации');
     }
   };
 
-  useEffect(() =>{
-    var access_token = refresh(localStorage.getItem("refresh_token"));
-    if (access_token != null) {
-      axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {
-        headers: {
-          "authorization": `Bearer ${access_token}`
-        }
-      })
-        .then((response) => {
-          if (response['data']['status'] === "user")
-            setUserIsStaff(false);
-          else
-            setUserIsStaff(true);
-        });
-    }
-  }, []);
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const access_token = refresh(localStorage.getItem("refresh_token"));
+        if (!access_token) return;
+        
+        const response = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/auth/status/`,
+          { headers: { "Authorization": `Bearer ${access_token}` } }
+        );
+        setUserIsStaff(response.data.status !== "user");
+      } catch (error) {
+        console.error('Ошибка проверки статуса:', error);
+      }
+    };
+    
+    if (registered) checkAuthStatus();
+    else navigate('/');
+  }, [registered, navigate, setUserIsStaff]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const authConfig = await getAuthHeader();
+        
+        // Загрузка данных объекта
         const statusResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
           authConfig
@@ -56,81 +57,123 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
         setObjectStatus(statusResponse.data);
         setTitle(statusResponse.data.object.name);
 
-        console.log(isStaff);
         if (isStaff) {
-          console.log(1);
-
+          // Для прораба: история работ
           const worksResponse = await axios.get(
             `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
             authConfig
           );
-
-          setAllWorks(worksResponse.data.filter((work) => work.end_time !== null && work.review === null));
+          setAllWorks(worksResponse.data || []);
         } else {
-          console.log(2);
-
-          const userWorksResponse = await axios.get(
+          // Для работника: задачи
+          const tasksResponse = await axios.get(
             `${process.env.REACT_APP_HOST}/api/v1/user/works/`,
             authConfig
-          ).catch((error) => {
-            if (error.status === 404){
-              console.log(":(");
-            }
-          })
-          setUserWorks(userWorksResponse.data.filter((work) => work.end_time === null && work.review === null));
+          );
+          setActiveTask(tasksResponse.data?.active_task || null);
+          setAvailableTasks(tasksResponse.data?.available_tasks || []);
         }
       } catch (error) {
-        setError(error.status);
+        const status = error.response?.status || 500;
+        setError(status);
         setTitle("Ошибка");
+        
+        if (status === 401) {
+          localStorage.removeItem('refresh_token');
+          navigate('/login');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [objectId, refreshToken]);
+  }, [objectId, refreshToken, isStaff, setTitle, navigate]);
 
-  
+  const createNewTask = async () => {
+    try {
+      const authConfig = await getAuthHeader();
+      const response = await axios.post(
+        `${process.env.REACT_APP_HOST}/api/v1/user/works/`,
+        { object_id: objectId },
+        authConfig
+      );
+      setActiveTask(response.data);
+      setAvailableTasks(prev => [...prev, response.data]);
+    } catch (error) {
+      setError(error.response?.status || 500);
+    }
+  };
 
-  if (loading) {
-    return <div>Загрузка...</div>;
-  }
+  const handleCompleteTask = () => {
+    setActiveTask(null);
+    setAvailableTasks(prev => prev.filter(t => t.id !== activeTask?.id));
+  };
+
+  if (loading) return <div className="loading">Загрузка данных...</div>;
 
   if (error) {
     return (
-    <div>
-      <center>
-        {error == 404 && <p>Объекта не существует</p>}
-        {error == 403 && <p>У вас нету доступа к этому объекту</p>}
-        <p>Обратитесь к администратору</p>
-        
-        <NavLink to="/" className="link" >
-          На главную
-        </NavLink>
-      </center>
-    </div>
+      <div className="error-container">
+        {error === 404 && <p>Объект не найден</p>}
+        {error === 403 && <p>Доступ запрещен</p>}
+        {error === 401 && <p>Требуется авторизация</p>}
+        <NavLink to="/" className="link">На главную</NavLink>
+      </div>
     );
   }
 
   return (
-    <div>
+    <div className="object-details">
       {objectStatus && (
-        <div style={{marginLeft:"20px"}}>
+        <div className="object-info">
+          <h2>{objectStatus.object.name}</h2>
           <p>Адрес: {objectStatus.object.address}</p>
+          <p>Статус объекта: {objectStatus.status}</p>
         </div>
       )}
+
       {isStaff ? (
-        <>
-        {!allWorks ?  <p>нет работ на оценку</p> :
-        <WorkList works={allWorks} isStaff={true} />
-        }
-        </> 
+        <div className="foreman-interface">
+          <h3>Работы на оценку</h3>
+          {allWorks.length > 0 ? (
+            <WorkList works={allWorks} isStaff={true} />
+          ) : (
+            <div className="empty-state">
+              <p>Нет работ на оценку</p>
+              <p>История работ по этому объекту пуста</p>
+            </div>
+          )}
+        </div>
       ) : (
-        <>
-        {!userWorks ?  <p>работы нету</p> :
-        <WorkList works={userWorks} isStaff={false} />
-        }
-        </>
+        <div className="worker-interface">
+          {activeTask ? (
+            <WorkImageForm 
+              workId={activeTask.id}
+              refreshToken={refreshToken}
+              onComplete={handleCompleteTask}
+            />
+          ) : (
+            <div className="tasks-section">
+              {availableTasks.length > 0 ? (
+                <>
+                  <h3>Доступные задачи</h3>
+                  <WorkList works={availableTasks} isStaff={false} />
+                </>
+              ) : (
+                <div className="no-tasks">
+                  <p>Нет доступных задач</p>
+                  <button 
+                    onClick={createNewTask}
+                    className="create-task-btn"
+                  >
+                    Создать новую задачу
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

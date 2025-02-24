@@ -38,6 +38,7 @@ function App() {
       }
     }
   }, []);
+  console.log(localStorage.getItem("refresh_token"));
 
   const handleLogOut = async () => {
     if (refreshToken) {
@@ -126,6 +127,7 @@ function App() {
             element={
               <Camera
                 setTitle={setTitle}
+                registered={registered}
               />
             }
           />

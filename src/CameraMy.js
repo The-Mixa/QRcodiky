@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Camera } from 'react-camera-pro';
+import Webcam from 'react-webcam';
 import jsQR from "jsqr";
 
 export default function CameraComponent({ setTitle }) {
@@ -8,20 +8,22 @@ export default function CameraComponent({ setTitle }) {
     const [codeData, setCodeData] = useState("");
     const [hasPermission, setHasPermission] = useState(null);
     const [error, setError] = useState(null);
-    const cameraRef = useRef(null);
+    const webcamRef = useRef(null);
     
+    const videoConstraints = {
+        facingMode: "environment",
+        width: 500,
+        height: 500 
+    };
+
     useEffect(() => {
         setTitle("Сканирование QR");
         checkSavedPermissions();
     }, [setTitle]);
 
-    // Проверка сохраненных разрешений и текущего статуса
     const checkSavedPermissions = async () => {
         try {
-            // Проверяем сохраненное состояние
             const savedPermission = localStorage.getItem('cameraPermission');
-            
-            // Если есть сохраненное разрешение, проверяем актуальный статус
             if (savedPermission === 'granted') {
                 const permission = await checkCameraPermission();
                 if (permission === 'granted') {
@@ -36,10 +38,8 @@ export default function CameraComponent({ setTitle }) {
         }
     };
 
-    // Проверка текущего статуса разрешений через Permissions API
     const checkCameraPermission = async () => {
         if (!navigator.permissions) return 'prompt';
-        
         try {
             const permission = await navigator.permissions.query({ name: 'camera' });
             return permission.state;
@@ -48,16 +48,15 @@ export default function CameraComponent({ setTitle }) {
         }
     };
 
-    // Основной запрос доступа к камере
     const requestCameraAccess = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: videoConstraints 
+            });
             
-            // Сохраняем успешное разрешение
             localStorage.setItem('cameraPermission', 'granted');
             setHasPermission(true);
             
-            // Освобождаем поток сразу после проверки
             stream.getTracks().forEach(track => track.stop());
         } catch (err) {
             localStorage.removeItem('cameraPermission');
@@ -67,9 +66,9 @@ export default function CameraComponent({ setTitle }) {
     };
 
     const capture = useCallback(() => {
-        if (!hasPermission) return;
+        if (!hasPermission || !webcamRef.current) return;
         
-        const imageSrc = cameraRef.current?.takePhoto();
+        const imageSrc = webcamRef.current.getScreenshot();
         if (!imageSrc) return;
         
         setImg(imageSrc);
@@ -77,7 +76,7 @@ export default function CameraComponent({ setTitle }) {
         const img = new Image();
         img.src = imageSrc;
 
-        img.onload = function () {
+        img.onload = function() {
             const canvas = document.createElement('canvas');
             canvas.width = img.width;
             canvas.height = img.height;
@@ -87,7 +86,7 @@ export default function CameraComponent({ setTitle }) {
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-            if (code) {
+            if (code){
                 setCodeData(code.data);
                 setQrFind(true);
             }
@@ -96,10 +95,8 @@ export default function CameraComponent({ setTitle }) {
         };
     }, [hasPermission]);
 
-    // Обработка изменения разрешений в реальном времени
     useEffect(() => {
         let permissionStatus;
-        
         const trackPermissionChanges = async () => {
             try {
                 if (!navigator.permissions) return;
@@ -155,15 +152,19 @@ export default function CameraComponent({ setTitle }) {
         <div>
             {img === null ? (
                 <div className='camera-container'>
-                    <Camera
-                        ref={cameraRef}
-                        facingMode="environment"
-                        aspectRatio={1}
-                        errorMessages={{
-                            noCameraAccessible: "Доступ к камере не разрешен",
-                            permissionDenied: "Разрешение отклонено",
-                            switchCamera: "Ошибка переключения камеры",
-                            canvas: "Ошибка canvas"
+                    <Webcam
+                        ref={webcamRef}
+                        audio={false}
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={videoConstraints}
+                        onUserMediaError={(err) => {
+                            setError(err);
+                            setHasPermission(false);
+                        }}
+                        style={{
+                            width: '100%',
+                            
+                            borderRadius: "15px"
                         }}
                     />
                     <center>
