@@ -25,26 +25,6 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
   };
 
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const access_token = refresh(localStorage.getItem("refresh_token"));
-        if (!access_token) return;
-        
-        const response = await axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/auth/status/`,
-          { headers: { "Authorization": `Bearer ${access_token}` } }
-        );
-        setUserIsStaff(response.data.status !== "user");
-      } catch (error) {
-        console.error('Ошибка проверки статуса:', error);
-      }
-    };
-    
-    if (registered) checkAuthStatus();
-    else navigate('/');
-  }, [registered, navigate, setUserIsStaff]);
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
         const authConfig = await getAuthHeader();
@@ -66,29 +46,28 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
           setAllWorks(worksResponse.data || []);
         } else {
           // Для работника: задачи
-          const tasksResponse = await axios.get(
+          await axios.get(
             `${process.env.REACT_APP_HOST}/api/v1/user/works/`,
             authConfig
-          );
-          setActiveTask(tasksResponse.data?.active_task || null);
-          setAvailableTasks(tasksResponse.data?.available_tasks || []);
+          ).then((tasksResponse) =>{
+            setActiveTask(tasksResponse.data?.active_task || null);
+            setAvailableTasks(tasksResponse.data?.available_tasks || []);}
+          ).catch((error) => {console.log("no works")});
+          
         }
       } catch (error) {
+        console.log(error);
         const status = error.response?.status || 500;
         setError(status);
         setTitle("Ошибка");
         
-        if (status === 401) {
-          localStorage.removeItem('refresh_token');
-          navigate('/login');
-        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [objectId, refreshToken, isStaff, setTitle, navigate]);
+  }, [objectId, refreshToken, setTitle, navigate]);
 
   const createNewTask = async () => {
     try {
@@ -135,9 +114,11 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
 
       {isStaff ? (
         <div className="foreman-interface">
-          <h3>Работы на оценку</h3>
           {allWorks.length > 0 ? (
-            <WorkList works={allWorks} isStaff={true} />
+            <>
+              <h3>Работы на оценку</h3>
+              <WorkList works={allWorks} isStaff={true} />
+            </>
           ) : (
             <div className="empty-state">
               <p>Нет работ на оценку</p>
