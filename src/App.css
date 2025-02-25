@@ -9,7 +9,6 @@ form{
   border-radius: 10px;
   box-shadow: 0px 0px 20px 0px rgba(34, 60, 80, 0.4);
   color: white;
-
 }
 
 @media (min-width: 500px){
@@ -340,8 +339,12 @@ body {
   font-weight: 500;
 }
 
+.form-input{
+  min-width: calc(100% - 27px);
+}
+
 .form-textarea {
-  width: calc(100% - 30px);
+  min-width: calc(100% - 30px);
   padding: 12px;
   border: 2px solid #2196FD;
   border-radius: 6px;

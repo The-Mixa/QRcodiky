@@ -203,6 +203,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
                       <div className="form-group">
                         <label className='form-label'>Название:</label>
                         <input
+                          className='form-input'
                           type="text"
                           name="name"
                           value={newTaskData.name}
@@ -241,7 +242,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
                       <p>Нет доступных задач</p>
                       <button 
                         onClick={() => setShowCreateForm(true)}
-                        className="create-btn"
+                        className="link"
                       >
                         Создать новую задачу
                       </button>
