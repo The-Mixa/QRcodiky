@@ -1,33 +1,26 @@
 import React, { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import Account from './Account';
+import { Navigate } from 'react-router-dom';
 
 export default function MainPage({ registered, userIsStaff, onLogOut, setTitle }) {
-  // Используем useEffect для установки заголовка
   useEffect(() => {
     setTitle("Главная");
   }, [setTitle]);
 
+  if (!registered) {
+    return <Navigate to="/login" />;
+  }
+
   return (
-    <>
-      {registered ? (
-        <div className='centr-vert'>
-          <NavLink to="/camera" className="link">
-            Камера
-          </NavLink>
-          <br />
-          <button onClick={onLogOut} className='link grey'>
-            Выйти из аккаунта
-          </button>
-        </div>
-      ) : (
-        <Account
-          registered={registered}
-          userIsStaff={userIsStaff}
-          onLogOut={onLogOut}
-          setTitle={setTitle}
-        />
-      )}
-    </>
+    <div className='centr-vert'>
+      <NavLink to="/camera" className="link">
+        Камера
+      </NavLink>
+      <br />
+      <button onClick={onLogOut} className='link grey'>
+        Выйти из аккаунта
+      </button>
+    </div>
   );
 }
