@@ -32,7 +32,7 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
   };
 
   useEffect(() => {
-    const fetchWorkDetails = async () => {
+    const fetchWorkDetails = async () => { 
       try {
         const authConfig = await getAuthHeader();
         const response = await axios.get(
@@ -41,7 +41,7 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
         );
         setWork(response.data);
         setTitle(response.data.name);
-        setComment(response.data.description);
+        setComment(response.data.worker_comment);
         setRating(response.data.rating || 0);
       } catch (error) {
         setError(error.message);
@@ -54,12 +54,6 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
   }, [workId, refreshToken, setTitle]);
 
   const handleStartWork = async () => {
-    
-  };
-
-  
-
-  const handleRateWork = async () => {
     try {
       const authConfig = await getAuthHeader();
       await axios.post(
@@ -69,11 +63,29 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
         },
         authConfig
       );
-      navigate(-1);
+      navigate(-1); // Возвращаемся на предыдущую страницу
     } catch (error) {
       setError(error.message);
     }
   };
+
+  const handleRateWork = async () => {
+    try {
+        const authConfig = await getAuthHeader();
+        await axios.post(
+          `${process.env.REACT_APP_HOST}/api/v1/review/${workId}/`,
+          { 
+            work: workId,
+            rating: rating, 
+            comment: description, 
+          },
+          authConfig
+        );
+        navigate(-1); // Возвращаемся на предыдущую страницу
+    } catch (error) {
+        setError(error.message);
+    }
+};
 
   if (loading) {
     return <div className="loading">Загрузка данных о работе...</div>;
@@ -87,19 +99,25 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
   if (work && work.start_time === null && !isStaff) {
     return (
       <div className="work-image-form">
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
         <center>
-            <button onClick={handleRateWork}>Начать работу</button>
+          <h2>Информация о работе</h2>
+          <p><b>Объект: </b>{work.object.name}</p>
+          <p><b>Адрес: </b>{work.object.address}</p>
+          <p><b>Описание объекта: </b>{work.object.task_description}</p>
+          <p><b>Название работы: </b>{work.name}</p>
+          <p><b>Описание работы: </b>{work.description}</p>
+          <button onClick={handleStartWork}>Начать работу</button>
         </center>
       </div>
-    )
+    );
   }
 
   return (
@@ -107,8 +125,21 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
       <h1 className="work-details-title">Детали работы</h1>
       {isStaff ? (
         <div className="staff-review-section">
-          <p className="comment-text">Описание от работника: {comment}</p>
-          <label className="comment-label">Добавить комментарий:</label>
+          {work.images.length > 0 && (
+                  <div className="images">
+                    {work.images.map((image) => (
+                      <img key={image.id} src={image.image} alt={`Work image ${image.id}`} />
+                    ))}
+                  </div>
+                )}
+                <h2>Информация о работе</h2>
+          <p><b>Объект: </b>{work.object.name}</p>
+          <p><b>Адрес: </b>{work.object.address}</p>
+          <p><b>Описание объекта: </b>{work.object.task_description}</p>
+          <p><b>Название работы: </b>{work.name}</p>
+          <p><b>Описание работы: </b>{work.description}</p>
+          <p className="comment-text"><b>Описание от работника:</b> {comment}</p>
+          <label className="comment-label"><b>Добавить комментарий к оценке:</b></label>
           <textarea
             className="textarea-comment"
             value={description}

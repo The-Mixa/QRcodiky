@@ -34,27 +34,29 @@ const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/login/`, credentials)
-      .then(function(response) {
-        if (response['data']["error"] === undefined){
-          var refresh_token = response['data']['refresh_token'];
-          setRegistered();
-          registered=true;
-          setRefreshToken(refresh_token);
-          localStorage.setItem("refresh_token", refresh_token);
-          getUserStatus(response['data']['access_token']);
-          navigate("/");
-        }
-        else{
-          alert("Invalid credentials");
-        }
-
-      });
+      const response = await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/login/`, credentials);
       
+      if (response['data']["error"] === undefined) {
+        var refresh_token = response['data']['refresh_token'];
+        setRegistered();
+        registered = true;
+        setRefreshToken(refresh_token);
+        localStorage.setItem("refresh_token", refresh_token);
+        getUserStatus(response['data']['access_token']);
+        navigate("/");
+      } else {
+        alert("Invalid credentials");
+      }
+  
     } catch (error) {
-      console.error('Ошибка при входе:', error);
+      if (error.response && error.response.status === 401) {
+        alert("Неверный пароль");
+      } else {
+        console.error('Ошибка при входе:', error);
+      }
     }
   };
+  
 
   return (
     <div className='form-container'>

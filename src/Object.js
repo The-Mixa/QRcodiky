@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import WorkList from './WorkList';
+import WorkListReview from './WorkListReview';
 import WorkImageForm from './WorkImageForm';
 import { refresh } from './refresh';
 
@@ -9,9 +10,14 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
   const navigate = useNavigate();
   const { objectId } = useParams();
   const [objectStatus, setObjectStatus] = useState(null);
-  const [activeTask, setActiveTask] = useState(null);
-  const [availableTasks, setAvailableTasks] = useState([]);
+  const [userWorks, setUserWorks] = useState([]);
   const [allWorks, setAllWorks] = useState([]);
+  const [activeTask, setActiveTask] = useState(null);  // Инициализация состояния для activeTask
+  const [worksWithoutReviews, setWorksWithoutReviews] = useState([]);
+  const [availableTasks, setAvailableTasks] = useState([]);
+  const [currentTasks, setCurrentTasks] = useState([]); // Текущие задачи
+  const [workersInfo, setWorkersInfo] = useState({});
+  const [workHistory, setWorkHistory] = useState([]); // История работ
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -30,6 +36,44 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
     }
   };
 
+  const handleCompleteTask = () => {
+    setActiveTask(null);  // Убираем активную задачу
+    setAvailableTasks(prev => prev.filter(t => t.id !== activeTask?.id));  // Убираем завершённую задачу из списка доступных
+  };
+
+  const handleInputChange = (e) => {
+    setNewTaskData({
+      ...newTaskData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Отправка новой задачи на сервер
+  const handleCreateTask = async () => {
+    try {
+      const authConfig = await getAuthHeader();
+      const response = await axios.post(
+        `${process.env.REACT_APP_HOST}/api/v1/start/`,
+        {
+          object: objectId,
+          name: newTaskData.name,
+          description: newTaskData.description,
+        },
+        authConfig
+      );
+      setAvailableTasks(prev => [...prev, response.data]);  // Добавляем новую задачу в список
+      setShowCreateForm(false);  // Закрываем форму
+      setNewTaskData({
+        object_id: objectId,
+        name: '',
+        description: ''
+      });  // Очищаем поля формы
+    } catch (error) {
+      setError(error.response?.data?.message || error.message);  // Обрабатываем ошибку
+    }
+  };
+
+  // Проверка роли пользователя (проверка на прораба или работника)
   useEffect(() => {
     const fetchUserStatus = async () => {
       try {
@@ -49,12 +93,12 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
     fetchUserStatus();
   }, [refreshToken, registered, setUserIsStaff]);
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const authConfig = await getAuthHeader();
         
-        // Загрузка данных объекта
         const statusResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
           authConfig
@@ -62,37 +106,116 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
         setObjectStatus(statusResponse.data);
         setTitle(statusResponse.data.object.name);
 
-        if (isStaff) {
-          // Для прораба: история работ
-          const worksResponse = await axios.get(
-            `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
-            authConfig
-          );
-          setAllWorks(worksResponse.data.filter(work => work.review === null));
-        } else {
-          // Для работника: сначала проверяем свои задачи
-          const userWorksResponse = await axios.get(
-            `${process.env.REACT_APP_HOST}/api/v1/user/works/`,
-            authConfig
-          );
+        // Загрузка работ, на которые можно оставить отзывы
+        const worksWithoutReviewsResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
+          authConfig
+        );
+        setWorksWithoutReviews(worksWithoutReviewsResponse.data);  // Работы без отзывов
 
-          userWorksResponse.data = userWorksResponse.data.filter((work) => {return work.end_time === null})
-          
-          if (userWorksResponse.data.length === 0) {
-            // Если своих задач нет, запрашиваем доступные
-            const freeWorksResponse = await axios.get(
-              `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
+        // Загрузка истории работ
+        const historyResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+          authConfig
+        );
+        setWorkHistory(historyResponse.data); // Сохраняем историю работ
+
+        // Получаем доступные задачи и текущие задачи
+        const userWorksResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+          authConfig
+        );
+        
+        const current = userWorksResponse.data.filter((work) => work.start_time && !work.end_time); // Текущие задачи
+        setCurrentTasks(current);
+
+        userWorksResponse.data = userWorksResponse.data.filter((work) => {return work.end_time === null});
+        if (userWorksResponse.data.length === 0 || userWorksResponse.status === 404) {
+          const freeWorksResponse = await axios.get(
+            `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
+            authConfig
+          );
+          const avaliable = userWorksResponse.data.filter((work) => !work.start_time && !work.end_time);
+          setAvailableTasks(avaliable);
+        } else {
+          const active = userWorksResponse.data.find(work => 
+            work.start_date && !work.end_date
+          );
+          setActiveTask(active || null);
+          const avaliable = userWorksResponse.data.filter((work) => !work.start_time && !work.end_time);
+          setAvailableTasks(avaliable);
+        }
+
+        // Получаем информацию о рабочих
+        const workers = {};
+        for (let work of [...worksWithoutReviewsResponse.data, ...userWorksResponse.data]) {
+          if (work.user) {
+            const workerResponse = await axios.get(
+              `${process.env.REACT_APP_HOST}/api/v1/user/info/${work.user}/`,
               authConfig
             );
-            setAvailableTasks(freeWorksResponse.data);
-          } else {
-            // Показываем задачи пользователя
-            const active = userWorksResponse.data.find(work => 
-              work.start_date && !work.end_date
-            );
-            setActiveTask(active || null);
-            setAvailableTasks(userWorksResponse.data);
+            workers[work.id] = workerResponse.data.username;
           }
+        }
+        setWorkersInfo(workers);
+
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [objectId, refreshToken, setTitle, navigate, isStaff]);
+
+
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const authConfig = await getAuthHeader();
+        
+        const statusResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
+          authConfig
+        );
+        setObjectStatus(statusResponse.data);
+        setTitle(statusResponse.data.object.name);
+
+        // Загрузка истории работ
+        const historyResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+          authConfig
+        );
+        setWorkHistory(historyResponse.data); // Сохраняем историю работ
+
+        // Получаем доступные задачи и текущие задачи
+        const userWorksResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+          authConfig
+        );
+        
+        const current = userWorksResponse.data.filter((work) => work.start_time && !work.end_time); // Текущие задачи
+        setCurrentTasks(current);
+
+        userWorksResponse.data = userWorksResponse.data.filter((work) => {return work.end_time === null});
+        if (userWorksResponse.data.length === 0 || userWorksResponse.status === 404) {
+          const freeWorksResponse = await axios.get(
+            `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
+            authConfig
+          );
+          const avaliable = userWorksResponse.data.filter((work) => !work.start_time && !work.end_time);
+          setAvailableTasks(avaliable);
+        } else {
+          const active = userWorksResponse.data.find(work => 
+            work.start_date && !work.end_date
+          );
+          setActiveTask(active || null);
+          const avaliable = userWorksResponse.data.filter((work) => !work.start_time && !work.end_time);
+          setAvailableTasks(avaliable);
         }
       } catch (error) {
         console.error(error);
@@ -105,39 +228,6 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
 
     fetchData();
   }, [objectId, refreshToken, setTitle, navigate, isStaff]);
-
-  const handleCreateTask = async () => {
-    try {
-      const authConfig = await getAuthHeader();
-      const response = await axios.post(
-        `${process.env.REACT_APP_HOST}/api/v1/start/`,
-        newTaskData,
-        authConfig
-      );
-      
-      setAvailableTasks(prev => [...prev, response.data]);
-      setShowCreateForm(false);
-      setNewTaskData({
-        object_id: objectId,
-        name: '',
-        description: ''
-      });
-    } catch (error) {
-      setError(error.response?.data?.message || error.message);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    setNewTaskData({
-      ...newTaskData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleCompleteTask = () => {
-    setActiveTask(null);
-    setAvailableTasks(prev => prev.filter(t => t.id !== activeTask?.id));
-  };
 
   if (loading) return <div className="loading">Загрузка данных...</div>;
 
@@ -164,12 +254,20 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
         </div>
       )}
 
+      {/* Блок текущих задач */}
+      {!isStaff && currentTasks.length > 0 && (
+        <div className="current-tasks">
+          <center><h3>Текущая задача</h3></center>
+          <WorkList works={currentTasks} isStaff={false} />
+        </div>
+      )}
+  
       {isStaff ? (
         <div className="foreman-interface">
-          {allWorks.length > 0 ? (
+          {worksWithoutReviews.length > 0 ? (
             <>
               <center><h3>Работы на оценку</h3></center>
-              <WorkList works={allWorks} isStaff={true} />
+              <WorkListReview works={worksWithoutReviews} isStaff={true} />
             </>
           ) : (
             <center>
@@ -201,9 +299,9 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
                     <form className="work-form">
                       <h4>Создать новую задачу</h4>
                       <div className="form-group">
-                        <label className='form-label'>Название:</label>
+                        <label className="form-label">Название:</label>
                         <input
-                          className='form-input'
+                          className="form-input"
                           type="text"
                           name="name"
                           value={newTaskData.name}
@@ -214,7 +312,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
                       <div className="form-group">
                         <label className="form-label">Описание:</label>
                         <textarea
-                          className='form-textarea'
+                          className="form-textarea"
                           name="description"
                           value={newTaskData.description}
                           onChange={handleInputChange}
@@ -254,6 +352,34 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
           )}
         </div>
       )}
+
+      {/* История работ */}
+      <div className="work-history">
+        {workHistory.length > 0 && (
+          <>
+            <center><h3>История работ</h3></center>
+            {workHistory.map((work) => (
+              <div key={work.id} className="work-item">
+                <p><b>Название: </b>{work.name || "Без названия"}</p>
+                <p><b>Описание: </b>{work.description || "Нет описания"}</p>
+                {work.images.length > 0 && (
+                  <div className="images">
+                    {work.images.map((image) => (
+                      <img key={image.id} src={image.image} alt={`Work image ${image.id}`} />
+                    ))}
+                  </div>
+                )}
+                {work.review && (
+                  <div className="review">
+                    <p><b>Оценка: </b>{work.review.rating}</p>
+                    <p><b>Комментарий: </b>{work.review.comment}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </>
+        )}
+      </div>
     </div>
   );
 };
