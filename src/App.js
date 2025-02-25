@@ -140,7 +140,7 @@ function App() {
                 isStaff={userIsStaf}
                 setTitle={setTitle}
                 setUserIsStaff={setUserIsStaff}
-                registered={registered}
+                setRegistered={setRegistered}
               />
             }
           />

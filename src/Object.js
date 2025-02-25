@@ -14,6 +14,12 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
   const [allWorks, setAllWorks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newTaskData, setNewTaskData] = useState({
+    object_id: objectId,
+    name: '',
+    description: ''
+  });
 
   const getAuthHeader = async () => {
     try {
@@ -23,6 +29,25 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
       throw new Error('Ошибка авторизации');
     }
   };
+
+  useEffect(() => {
+    const fetchUserStatus = async () => {
+      try {
+        const accessToken = refresh(refreshToken);
+        if (!accessToken || !registered) return;
+        
+        const response = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/auth/status/`,
+          { headers: { "Authorization": `Bearer ${accessToken}` } }
+        );
+        setUserIsStaff(response.data.status !== "user");
+      } catch (error) {
+        console.error('Ошибка проверки статуса:', error);
+      }
+    };
+
+    fetchUserStatus();
+  }, [refreshToken, registered, setUserIsStaff]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,45 +68,70 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
             `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
             authConfig
           );
-          setAllWorks(worksResponse.data || []);
+          setAllWorks(worksResponse.data.filter(work => work.review === null));
         } else {
-          // Для работника: задачи
-          await axios.get(
+          // Для работника: сначала проверяем свои задачи
+          const userWorksResponse = await axios.get(
             `${process.env.REACT_APP_HOST}/api/v1/user/works/`,
             authConfig
-          ).then((tasksResponse) =>{
-            setActiveTask(tasksResponse.data?.active_task || null);
-            setAvailableTasks(tasksResponse.data?.available_tasks || []);}
-          ).catch((error) => {console.log("no works")});
+          );
+
+          userWorksResponse.data = userWorksResponse.data.filter((work) => {return work.end_time === null})
           
+          if (userWorksResponse.data.length === 0) {
+            // Если своих задач нет, запрашиваем доступные
+            const freeWorksResponse = await axios.get(
+              `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
+              authConfig
+            );
+            setAvailableTasks(freeWorksResponse.data);
+          } else {
+            // Показываем задачи пользователя
+            const active = userWorksResponse.data.find(work => 
+              work.start_date && !work.end_date
+            );
+            setActiveTask(active || null);
+            setAvailableTasks(userWorksResponse.data);
+          }
         }
       } catch (error) {
-        console.log(error);
-        const status = error.response?.status || 500;
-        setError(status);
+        console.error(error);
+        setError(error.response?.status || 500);
         setTitle("Ошибка");
-        
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [objectId, refreshToken, setTitle, navigate]);
+  }, [objectId, refreshToken, setTitle, navigate, isStaff]);
 
-  const createNewTask = async () => {
+  const handleCreateTask = async () => {
     try {
       const authConfig = await getAuthHeader();
       const response = await axios.post(
-        `${process.env.REACT_APP_HOST}/api/v1/user/works/`,
-        { object_id: objectId },
+        `${process.env.REACT_APP_HOST}/api/v1/start/`,
+        newTaskData,
         authConfig
       );
-      setActiveTask(response.data);
+      
       setAvailableTasks(prev => [...prev, response.data]);
+      setShowCreateForm(false);
+      setNewTaskData({
+        object_id: objectId,
+        name: '',
+        description: ''
+      });
     } catch (error) {
-      setError(error.response?.status || 500);
+      setError(error.response?.data?.message || error.message);
     }
+  };
+
+  const handleInputChange = (e) => {
+    setNewTaskData({
+      ...newTaskData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleCompleteTask = () => {
@@ -97,7 +147,9 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
         {error === 404 && <p>Объект не найден</p>}
         {error === 403 && <p>Доступ запрещен</p>}
         {error === 401 && <p>Требуется авторизация</p>}
-        <NavLink to="/" className="link">На главную</NavLink>
+        <center>
+          <NavLink to="/" className="link">На главную</NavLink>
+        </center>
       </div>
     );
   }
@@ -116,14 +168,16 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
         <div className="foreman-interface">
           {allWorks.length > 0 ? (
             <>
-              <h3>Работы на оценку</h3>
+              <center><h3>Работы на оценку</h3></center>
               <WorkList works={allWorks} isStaff={true} />
             </>
           ) : (
-            <div className="empty-state">
-              <p>Нет работ на оценку</p>
-              <p>История работ по этому объекту пуста</p>
-            </div>
+            <center>
+              <div className="empty-state">
+                <p>Нет работ на оценку</p>
+                <p>История работ по этому объекту пуста</p>
+              </div>
+            </center>
           )}
         </div>
       ) : (
@@ -138,18 +192,61 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
             <div className="tasks-section">
               {availableTasks.length > 0 ? (
                 <>
-                  <h3>Доступные задачи</h3>
+                  <center><h3>Доступные задачи</h3></center>
                   <WorkList works={availableTasks} isStaff={false} />
                 </>
               ) : (
                 <div className="no-tasks">
-                  <p>Нет доступных задач</p>
-                  <button 
-                    onClick={createNewTask}
-                    className="create-task-btn"
-                  >
-                    Создать новую задачу
-                  </button>
+                  {showCreateForm ? (
+                    <form className="work-form">
+                      <h4>Создать новую задачу</h4>
+                      <div className="form-group">
+                        <label className='form-label'>Название:</label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={newTaskData.name}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Описание:</label>
+                        <textarea
+                          className='form-textarea'
+                          name="description"
+                          value={newTaskData.description}
+                          onChange={handleInputChange}
+                          rows="3"
+                        />
+                      </div>
+                      <div className="form-actions">
+                        <button 
+                          onClick={handleCreateTask}
+                          className="submit-btn"
+                          disabled={!newTaskData.name}
+                        >
+                          Создать
+                        </button>
+                        <button 
+                          onClick={() => setShowCreateForm(false)}
+                          className="cancel-btn"
+                        >
+                          Отмена
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <p>Нет доступных задач</p>
+                      <button 
+                        onClick={() => setShowCreateForm(true)}
+                        className="create-btn"
+                      >
+                        Создать новую задачу
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
