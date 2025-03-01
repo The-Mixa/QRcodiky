@@ -6,7 +6,7 @@ import RatingComponent from './RatingComponent';
 import { refresh } from './refresh';
 import './App.css';
 
-const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
+const WorkDetails = ({isStaff, setTitle }) => {
   const { workId } = useParams();
   const navigate = useNavigate();
   const [work, setWork] = useState(null);
@@ -24,7 +24,7 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
 
   const getAuthHeader = async () => {
     try {
-      const accessToken = refresh(refreshToken);
+      const accessToken = refresh(localStorage.getItem("refresh_token"));
       return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
       throw new Error('Ошибка авторизации');
@@ -51,7 +51,7 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
     };
 
     fetchWorkDetails();
-  }, [workId, refreshToken, setTitle]);
+  }, [workId, setTitle]);
 
   const handleStartWork = async () => {
     try {
@@ -154,7 +154,6 @@ const WorkDetails = ({ refreshToken, isStaff, setTitle }) => {
         <WorkImageForm 
           workDescription={description} 
           workId={workId} 
-          refreshToken={refreshToken} 
         />
       )}
     </div>

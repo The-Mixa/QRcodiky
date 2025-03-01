@@ -2,13 +2,14 @@ import React, { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import Account from './Account';
 import { Navigate } from 'react-router-dom';
+import { registered } from './refresh';
 
-export default function MainPage({ registered, userIsStaff, onLogOut, setTitle }) {
+export default function MainPage({onLogOut, setTitle }) {
   useEffect(() => {
     setTitle("Главная");
   }, [setTitle]);
 
-  if (!registered) {
+  if (!registered()) {
     return <Navigate to="/login" />;
   }
 

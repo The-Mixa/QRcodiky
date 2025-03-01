@@ -21,3 +21,10 @@ export function refresh(refresh_token){
     return access_token;
   }
 }
+
+
+export function registered(){
+  if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null' && localStorage.getItem("refresh_token") !== null)
+    return true;
+  return false;
+}

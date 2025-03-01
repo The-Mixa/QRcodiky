@@ -1,31 +1,30 @@
 // Login.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
+const Login = ({setUserData, setTitle}) => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     identifier: '',
     password: ''
   });
 
-  var registered = false;
   function getUserStatus(accessToken){
-    if (registered){
-        axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {headers: {
-            "authorization": `Bearer ${accessToken}`
-        }})
-            .then((response) => {
-              if (response['data']['status'] === "user")
-                setUserData(false);
-              else
-                setUserData(true);
-        });
-    } 
+    axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {headers: {
+        "authorization": `Bearer ${accessToken}`
+    }})
+        .then((response) => {
+          if (response['data']['status'] === "user")
+            setUserData(false);
+          else
+            setUserData(true);
+    });
+    
   }
 
-  setTitle("Вход в аккаунт");
+  useEffect(() => setTitle("Вход в аккаунт"));
+
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -38,9 +37,6 @@ const Login = ({setRegistered, setRefreshToken, setUserData, setTitle}) => {
       
       if (response['data']["error"] === undefined) {
         var refresh_token = response['data']['refresh_token'];
-        setRegistered();
-        registered = true;
-        setRefreshToken(refresh_token);
         localStorage.setItem("refresh_token", refresh_token);
         getUserStatus(response['data']['access_token']);
         navigate("/");

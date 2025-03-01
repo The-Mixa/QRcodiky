@@ -4,9 +4,9 @@ import axios from 'axios';
 import WorkList from './WorkList';
 import WorkListReview from './WorkListReview';
 import WorkImageForm from './WorkImageForm';
-import { refresh } from './refresh';
+import { refresh, registered } from './refresh';
 
-const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsStaff }) => {
+const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   const navigate = useNavigate();
   const { objectId } = useParams();
   const [objectStatus, setObjectStatus] = useState(null);
@@ -29,7 +29,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
 
   const getAuthHeader = async () => {
     try {
-      const accessToken = refresh(refreshToken);
+      const accessToken = refresh(localStorage.getItem("refresh_token"));
       return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
       throw new Error('Ошибка авторизации');
@@ -77,8 +77,8 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
   useEffect(() => {
     const fetchUserStatus = async () => {
       try {
-        const accessToken = refresh(refreshToken);
-        if (!accessToken || !registered) return;
+        const accessToken = refresh(localStorage.getItem("refresh_token"));
+        if (!accessToken || !registered()) return;
         
         const response = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/auth/status/`,
@@ -91,7 +91,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
     };
 
     fetchUserStatus();
-  }, [refreshToken, registered, setUserIsStaff]);
+  }, [ setUserIsStaff]);
 
 
   useEffect(() => {
@@ -167,7 +167,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
     };
 
     fetchData();
-  }, [objectId, refreshToken, setTitle, navigate, isStaff]);
+  }, [objectId, setTitle, navigate, isStaff]);
 
 
 
@@ -227,7 +227,7 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
     };
 
     fetchData();
-  }, [objectId, refreshToken, setTitle, navigate, isStaff]);
+  }, [objectId, setTitle, navigate, isStaff]);
 
   if (loading) return <div className="loading">Загрузка данных...</div>;
 
@@ -283,7 +283,6 @@ const ObjectDetails = ({ refreshToken, isStaff, setTitle, registered, setUserIsS
           {activeTask ? (
             <WorkImageForm 
               workId={activeTask.id}
-              refreshToken={refreshToken}
               onComplete={handleCompleteTask}
             />
           ) : (

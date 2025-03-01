@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
-const Signup = ({setRegistered, setRefreshToken, registered}) => {
+const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
@@ -20,7 +20,6 @@ const Signup = ({setRegistered, setRefreshToken, registered}) => {
         .then((response) => {
           console.log(response);
           if (response['data']['refresh_token'] !== undefined){
-            setRefreshToken(response['data']['refresh_token']);
             localStorage.setItem("refresh_token", response['data']['refresh_token']);
             navigate('/');
           };
@@ -34,7 +33,6 @@ const Signup = ({setRegistered, setRefreshToken, registered}) => {
         await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/register/`, {"username": formData['username'], "password": formData['password']})
         .then(async (response) => {
           if (response['data']['message'] === "User registred successfully"){
-            setRegistered(true);
             await logIn();
           }
           

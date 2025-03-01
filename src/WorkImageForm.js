@@ -4,7 +4,7 @@ import { refresh } from './refresh';
 import axios from "axios";
 import './App.css';
 
-const WorkImageForm = ({ workId, refreshToken, setTitle }) => {
+const WorkImageForm = ({ workId, setTitle }) => {
     const [description, setDescription] = useState("");
     const [workName, setWorkName] = useState("");
     const [taskDescription, setTaskDescription] = useState("");
@@ -19,7 +19,7 @@ const WorkImageForm = ({ workId, refreshToken, setTitle }) => {
   
     const getAuthHeader = async () => {
       try {
-        const accessToken = refresh(refreshToken);
+        const accessToken = refresh(localStorage.getItem("refresh_token"));
         return {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -58,7 +58,7 @@ const WorkImageForm = ({ workId, refreshToken, setTitle }) => {
       };
 
       fetchWorkDetails();
-    }, [workId, refreshToken, setTitle]);
+    }, [workId, setTitle]);
 
     // Отправка изображения
     const handleAddImage = async () => {

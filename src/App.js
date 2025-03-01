@@ -12,16 +12,13 @@ import axios from 'axios';
 import WorkDetails from './WorkDetails';
 
 function App() {
-  const [registered, setRegistered] = useState(false);
-  const [refreshToken, setRefreshToken] = useState(null);
+  
   const [userIsStaf, setUserIsStaff] = useState(false);
   const [title, setTitle] = useState('Главная страница');
 
 
   useEffect(() => {
-    if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null') {
-      setRefreshToken(localStorage.getItem("refresh_token"));
-      setRegistered(true);
+    if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null' && localStorage.getItem("refresh_token") !== null) {
       var access_token = refresh(localStorage.getItem("refresh_token"));
       if (access_token != null) {
         axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {
@@ -38,17 +35,14 @@ function App() {
       }
     }
   }, []);
-  console.log(localStorage.getItem("refresh_token"));
 
   const handleLogOut = async () => {
-    if (refreshToken) {
+    if (localStorage.getItem("refresh_token")) {
       try {
         await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/logout/`, {
-          refresh_token: refreshToken
+          refresh_token: localStorage.getItem("refresh_token")
         });
 
-        setRefreshToken(null);
-        setRegistered(false);
         setUserIsStaff(false);
         localStorage.setItem("refresh_token", null);
       } catch (error) {
@@ -57,16 +51,11 @@ function App() {
     }
   };
 
-  function make_reg_true() {
-    setRegistered(true);
-  }
+  
 
   return (
     <>
       <div className="header">
-        {/* <Link to="/" className="home-button">
-          <img src={homePicAdres} alt="Home" className="home-icon" />
-        </Link> */}
         <h3>{title}</h3>
       </div>
       <Router>
@@ -76,7 +65,6 @@ function App() {
             element={
               <WorkDetails
                 isStaff={userIsStaf}
-                refreshToken={refreshToken}
                 setTitle={setTitle}
               />
             }
@@ -86,10 +74,7 @@ function App() {
             path="signup"
             element={
               <Signup
-                setRegistered={make_reg_true}
-                setRefreshToken={setRefreshToken}
                 setTitle={setTitle}
-                registered={registered}
               />
             }
           />
@@ -98,8 +83,6 @@ function App() {
             path="login"
             element={
               <Login
-                setRegistered={make_reg_true}
-                setRefreshToken={setRefreshToken}
                 setUserData={setUserIsStaff}
                 setTitle={setTitle}
               />
@@ -110,11 +93,7 @@ function App() {
             path=""
             element={
               <MainPage
-                registered={registered}
                 userIsStaff={userIsStaf}
-                refreshToken={refreshToken}
-                setRegistered={setRegistered}
-                setRefreshToken={setRefreshToken}
                 setUserData={setUserIsStaff}
                 onLogOut={handleLogOut}
                 setTitle={setTitle}
@@ -127,7 +106,6 @@ function App() {
             element={
               <Camera
                 setTitle={setTitle}
-                registered={registered}
               />
             }
           />
@@ -136,11 +114,9 @@ function App() {
             path="get_by_qr/:objectId"
             element={
               <Object
-                refreshToken={refreshToken}
                 isStaff={userIsStaf}
                 setTitle={setTitle}
                 setUserIsStaff={setUserIsStaff}
-                setRegistered={setRegistered}
               />
             }
           />
