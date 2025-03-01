@@ -26,9 +26,9 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
     description: ''
   });
 
-  const getAuthHeader = () => {
+  const getAuthHeader = async () => {
     try {
-      const accessToken = refresh(localStorage.getItem("refresh_token"));
+      const accessToken = await refresh(localStorage.getItem("refresh_token"));
       return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
       throw new Error('Ошибка авторизации');
@@ -50,7 +50,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   // Отправка новой задачи на сервер
   const handleCreateTask = async () => {
     try {
-      const authConfig =  getAuthHeader();
+      const authConfig = await getAuthHeader();
       const response =  axios.post(
         `${process.env.REACT_APP_HOST}/api/v1/start/`,
         {
@@ -97,7 +97,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   if (isStaff){
     const fetchData = async () => {
       try {
-        const authConfig =  getAuthHeader();
+        const authConfig =  await getAuthHeader();
         
         const  statusResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
@@ -176,7 +176,7 @@ useEffect(() => {
   if (!isStaff){
     const fetchData = async () => {
       try {
-        const authConfig =  getAuthHeader();
+        const authConfig = await getAuthHeader();
         
         const statusResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
