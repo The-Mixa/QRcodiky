@@ -26,7 +26,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
     description: ''
   });
 
-  const getAuthHeader = async () => {
+  const getAuthHeader = () => {
     try {
       const accessToken = refresh(localStorage.getItem("refresh_token"));
       return { headers: { Authorization: `Bearer ${accessToken}` } };
@@ -50,8 +50,8 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   // Отправка новой задачи на сервер
   const handleCreateTask = async () => {
     try {
-      const authConfig = await getAuthHeader();
-      const response = await axios.post(
+      const authConfig =  getAuthHeader();
+      const response =  axios.post(
         `${process.env.REACT_APP_HOST}/api/v1/start/`,
         {
           object: objectId,
@@ -79,9 +79,9 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
         const accessToken = refresh(localStorage.getItem("refresh_token"));
         if (!accessToken || !registered()) return;
         
-        const response = await axios.get(
+        const response =  axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/auth/status/`,
-          { headers: { "Authorization": `Bearer ${accessToken}` } }
+          { "headers": { "Authorization": `Bearer ${accessToken}` } }
         );
         setUserIsStaff(response.data.status !== "user");
       } catch (error) {
@@ -97,9 +97,9 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   if (isStaff){
     const fetchData = async () => {
       try {
-        const authConfig = await getAuthHeader();
+        const authConfig =  getAuthHeader();
         
-        const statusResponse = await axios.get(
+        const  statusResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
           authConfig
         );
@@ -131,7 +131,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
 
         userWorksResponse.data = userWorksResponse.data.filter((work) => {return work.end_time === null});
         if (userWorksResponse.data.length === 0 || userWorksResponse.status === 404) {
-          const freeWorksResponse = await axios.get(
+          const freeWorksResponse =  axios.get(
             `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
             authConfig
           );
@@ -176,7 +176,7 @@ useEffect(() => {
   if (!isStaff){
     const fetchData = async () => {
       try {
-        const authConfig = await getAuthHeader();
+        const authConfig =  getAuthHeader();
         
         const statusResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
@@ -203,7 +203,7 @@ useEffect(() => {
 
         userWorksResponse.data = userWorksResponse.data.filter((work) => {return work.end_time === null});
         if (userWorksResponse.data.length === 0 || userWorksResponse.status === 404) {
-          const freeWorksResponse = await axios.get(
+          const freeWorksResponse =  axios.get(
             `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
             authConfig
           );
