@@ -98,7 +98,7 @@ const WorkDetails = ({isStaff, setTitle }) => {
   // Если работа не начата
   if (work && work.start_time === null && !isStaff) {
     return (
-      <div className="work-image-form">
+      <div className="work-image-form" style={{backgroundColor: "lightgrey"}}>
         <br />
         <br />
         <br />
@@ -107,14 +107,15 @@ const WorkDetails = ({isStaff, setTitle }) => {
         <br />
         <br />
         <br />
-        <center>
+        
           <h2>Информация о работе</h2>
           <p><b>Объект: </b>{work.object.name}</p>
           <p><b>Адрес: </b>{work.object.address}</p>
           <p><b>Описание объекта: </b>{work.object.task_description}</p>
           <p><b>Название работы: </b>{work.name}</p>
           <p><b>Описание работы: </b>{work.description}</p>
-          <button onClick={handleStartWork}>Начать работу</button>
+        <center>
+          <button className='link' onClick={handleStartWork}>Начать работу</button>
         </center>
       </div>
     );
