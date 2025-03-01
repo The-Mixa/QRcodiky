@@ -135,7 +135,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
             `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
             authConfig
           );
-          const avaliable = userWorksResponse.data.filter((work) => !work.start_time && !work.end_time);
+          const avaliable = freeWorksResponse.data.filter((work) => !work.start_time && !work.end_time);
           setAvailableTasks(avaliable);
         } else {
           const active = userWorksResponse.data.find(work => 
@@ -207,7 +207,7 @@ useEffect(() => {
             `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
             authConfig
           );
-          const avaliable = userWorksResponse.data.filter((work) => !work.start_time && !work.end_time);
+          const avaliable = freeWorksResponse.data.filter((work) => !work.start_time && !work.end_time);
           setAvailableTasks(avaliable);
         } else {
           const active = userWorksResponse.data.find(work => 
