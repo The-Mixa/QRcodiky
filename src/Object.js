@@ -10,8 +10,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   const navigate = useNavigate();
   const { objectId } = useParams();
   const [objectStatus, setObjectStatus] = useState(null);
-  const [userWorks, setUserWorks] = useState([]);
-  const [allWorks, setAllWorks] = useState([]);
+
   const [activeTask, setActiveTask] = useState(null);  // Инициализация состояния для activeTask
   const [worksWithoutReviews, setWorksWithoutReviews] = useState([]);
   const [availableTasks, setAvailableTasks] = useState([]);
@@ -95,6 +94,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
 
 
   useEffect(() => {
+  if (isStaff){
     const fetchData = async () => {
       try {
         const authConfig = await getAuthHeader();
@@ -167,13 +167,13 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
     };
 
     fetchData();
+  }
   }, [objectId, setTitle, navigate, isStaff]);
 
 
 
-
-
-  useEffect(() => {
+useEffect(() => {
+  if (!isStaff){
     const fetchData = async () => {
       try {
         const authConfig = await getAuthHeader();
@@ -227,6 +227,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
     };
 
     fetchData();
+  }
   }, [objectId, setTitle, navigate, isStaff]);
 
   if (loading) return <div className="loading">Загрузка данных...</div>;
@@ -253,14 +254,6 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
           <p>Статус объекта: {objectStatus.status}</p>
         </div>
       )}
-
-      {/* Блок текущих задач */}
-      {!isStaff && currentTasks.length > 0 && (
-        <div className="current-tasks">
-          <center><h3>Текущая задача</h3></center>
-          <WorkList works={currentTasks} isStaff={false} />
-        </div>
-      )}
   
       {isStaff ? (
         <div className="foreman-interface">
@@ -280,9 +273,9 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
         </div>
       ) : (
         <div className="worker-interface">
-          {activeTask ? (
+          {currentTasks.length > 0? (
             <WorkImageForm 
-              workId={activeTask.id}
+              workId={currentTasks[0].id}
               onComplete={handleCompleteTask}
             />
           ) : (
@@ -298,7 +291,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
                     <form className="work-form">
                       <h4>Создать новую задачу</h4>
                       <div className="form-group">
-                        <label className="form-label">Название:</label>
+                        <label className="form-label">Название:</label> 
                         <input
                           className="form-input"
                           type="text"

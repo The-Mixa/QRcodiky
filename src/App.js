@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'; // Добавлен Link
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom'; // Добавлен Link
 import Signup from './Signup';
 import Login from './Login';
 import MainPage from "./MainPage";
@@ -15,7 +15,7 @@ function App() {
   
   const [userIsStaf, setUserIsStaff] = useState(false);
   const [title, setTitle] = useState('Главная страница');
-
+  const [register, setRegistered] = useState(true);
 
   useEffect(() => {
     if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null' && localStorage.getItem("refresh_token") !== null) {
@@ -45,6 +45,7 @@ function App() {
 
         setUserIsStaff(false);
         localStorage.setItem("refresh_token", null);
+        setRegistered(false);
       } catch (error) {
         console.error('Ошибка при выходе:', error);
       }

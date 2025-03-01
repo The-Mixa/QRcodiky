@@ -44,8 +44,6 @@ const WorkImageForm = ({ workId, setTitle }) => {
           setWorkName(response.data.name);
           setTaskDescription(response.data.description);
           setDescription(response.data.description);
-          setTitle(response.data.name);
-
           // Загружаем изображения
           const imagesResponse = await axios.get(
             `${process.env.REACT_APP_HOST}/api/v1/image_work/${workId}/list/`,
@@ -58,7 +56,7 @@ const WorkImageForm = ({ workId, setTitle }) => {
       };
 
       fetchWorkDetails();
-    }, [workId, setTitle]);
+    }, [workId]);
 
     // Отправка изображения
     const handleAddImage = async () => {
