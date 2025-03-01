@@ -203,7 +203,7 @@ useEffect(() => {
 
         userWorksResponse.data = userWorksResponse.data.filter((work) => {return work.end_time === null});
         if (userWorksResponse.data.length === 0 || userWorksResponse.status === 404) {
-          const freeWorksResponse =  axios.get(
+          const freeWorksResponse =  await axios.get(
             `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}`,
             authConfig
           );
