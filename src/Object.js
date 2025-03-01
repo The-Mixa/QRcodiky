@@ -28,7 +28,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
 
   const getAuthHeader = () => {
     try {
-      const accessToken = refresh(localStorage.getItem("refresh_token"));
+      const accessToken = await refresh(localStorage.getItem("refresh_token"));
       return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
       throw new Error('Ошибка авторизации');
@@ -76,7 +76,8 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   useEffect(() => {
     const fetchUserStatus = async () => {
       try {
-        const accessToken = refresh(localStorage.getItem("refresh_token"));
+        const accessToken = await refresh(localStorage.getItem("refresh_token"));
+        alert(accessToken);
         if (!accessToken || !registered()) return;
         
         const response = await axios.get(

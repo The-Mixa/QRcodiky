@@ -4,7 +4,7 @@ import axios from 'axios';
 export async function refresh(refresh_token) {
   try {
     const response = await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/refresh/`, { "refresh_token": refresh_token });
-    
+
 
     if (response.data.access_token !== undefined) {
       sessionStorage.setItem("access_token", response.data.access_token);
@@ -22,6 +22,7 @@ export async function refresh(refresh_token) {
 
   return null; 
 }
+
 
 
 export function registered(){

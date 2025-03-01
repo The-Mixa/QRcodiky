@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
     if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null' && localStorage.getItem("refresh_token") !== null) {
-      var access_token = refresh(localStorage.getItem("refresh_token"));
+      var access_token = await refresh(localStorage.getItem("refresh_token"));
       if (access_token != null) {
         axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {
           headers: {
