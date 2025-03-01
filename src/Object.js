@@ -290,7 +290,7 @@ useEffect(() => {
                   {showCreateForm ? (
                     <form className="work-form">
                     <center>
-                      <h4>Создать новую задачу</h4>
+                      {/* <h4>Создать новую задачу</h4> */}
                     </center>
                       <div className="form-group">
                         <label className="form-label">Название:</label> 
@@ -332,12 +332,12 @@ useEffect(() => {
                   ) : (
                     <>
                       <p>Нет доступных задач</p>
-                      <button 
+                      {/* <button 
                         onClick={() => setShowCreateForm(true)}
                         className="link"
                       >
                         Создать новую задачу
-                      </button>
+                      </button> */}
                     </>
                   )}
                 </div>

@@ -1,9 +1,8 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from "jsqr";
 
 export default function CameraComponent({ setTitle }) {
-    const [img, setImg] = useState(null);
     const [qrfind, setQrFind] = useState(false);
     const [codeData, setCodeData] = useState("");
     const webcamRef = useRef(null);
@@ -14,13 +13,20 @@ export default function CameraComponent({ setTitle }) {
         height: 500 
     };
 
-    useEffect(() => setTitle("Камера"));
+    useEffect(() => {
+        setTitle("Камера");
 
-    const capture = useCallback(() => {
+        // Функция для сканирования QR-кодов в реальном времени
+        const interval = setInterval(() => {
+            capture();
+        }, 100); // Захватывать каждый 100 мс (или по вашему усмотрению)
+
+        return () => clearInterval(interval); // Очистить интервал, когда компонент будет размонтирован
+    }, []);
+
+    const capture = () => {
         const imageSrc = webcamRef.current.getScreenshot();
         if (!imageSrc) return;
-        
-        setImg(imageSrc);
 
         const img = new Image();
         img.src = imageSrc;
@@ -38,44 +44,40 @@ export default function CameraComponent({ setTitle }) {
             if (code) {
                 setCodeData(code.data);
                 setQrFind(true);
+
+                // Переход по ссылке из QR-кода
+                window.location.href = code.data;
             } else {
                 setQrFind(false);
             }
         };
-    }, []);
+    };
 
     return (
         <div>
-            {img === null ? (
-                <div className='camera-container'>
-                    <Webcam
-                        ref={webcamRef}
-                        audio={false}
-                        screenshotFormat="image/jpeg"
-                        videoConstraints={videoConstraints}
-                        style={{
-                            width: '100%',
-                            borderRadius: "15px"
-                        }}
-                    />
-                    <center>
-                        <button className='link' onClick={capture}>Сканировать</button>
-                    </center>
+            <div className="camera-container">
+                <Webcam
+                    ref={webcamRef}
+                    audio={false}
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={videoConstraints}
+                    style={{
+                        width: '100%',
+                        borderRadius: "15px"
+                    }}
+                />
+            </div>
+
+            {qrfind && (
+                <div>
+                    <h1>QR-code найден</h1>
+                    <p>Перехожу по ссылке...</p>
                 </div>
-            ) : (
-                <div className="camera-container">
-                    <img src={img} alt="screenshot" />
-                    <center>
-                        <button className='link' onClick={() => setImg(null)}>Заново</button>
-                    </center>
-                    {qrfind ? (
-                        <>
-                            <h1>QR-code найден</h1>
-                            <center>
-                                <a className='link' href={codeData}>Ссылка на объект</a>
-                            </center>
-                        </>
-                    ) : <h1>QR-code не найден</h1>}
+            )}
+
+            {!qrfind && (
+                <div>
+                    <h1>QR-code не найден</h1>
                 </div>
             )}
         </div>
