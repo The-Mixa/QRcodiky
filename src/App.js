@@ -36,10 +36,10 @@ function App() {
     }
   }, []);
 
-  const handleLogOut = async () => {
+  const handleLogOut = () => {
     if (localStorage.getItem("refresh_token")) {
       try {
-        await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/logout/`, {
+        axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/logout/`, {
           refresh_token: localStorage.getItem("refresh_token")
         });
 
