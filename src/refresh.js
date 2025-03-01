@@ -24,7 +24,6 @@ export function refresh(refresh_token){
 
 
 export function registered(){
-  console.log(localStorage.getItem("refresh_token"));
   if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null' && localStorage.getItem("refresh_token") !== null)
     return true;
   return false;
