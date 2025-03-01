@@ -77,7 +77,6 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
     const fetchUserStatus = async () => {
       try {
         const accessToken = await refresh(localStorage.getItem("refresh_token"));
-        alert(accessToken);
         if (!accessToken || !registered()) return;
         
         const response = await axios.get(
