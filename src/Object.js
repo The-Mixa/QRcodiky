@@ -79,7 +79,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
         const accessToken = refresh(localStorage.getItem("refresh_token"));
         if (!accessToken || !registered()) return;
         
-        const response =  axios.get(
+        const response = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/auth/status/`,
           { "headers": { "Authorization": `Bearer ${accessToken}` } }
         );
@@ -90,7 +90,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
     };
 
     fetchUserStatus();
-  }, [ setUserIsStaff]);
+  });
 
 
   useEffect(() => {
@@ -289,7 +289,9 @@ useEffect(() => {
                 <div className="no-tasks">
                   {showCreateForm ? (
                     <form className="work-form">
+                    <center>
                       <h4>Создать новую задачу</h4>
+                    </center>
                       <div className="form-group">
                         <label className="form-label">Название:</label> 
                         <input

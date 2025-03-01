@@ -35,14 +35,11 @@ const Login = ({setUserData, setTitle}) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/login/`, credentials);
       
-      if (response['data']["error"] === undefined) {
         var refresh_token = response['data']['refresh_token'];
         localStorage.setItem("refresh_token", refresh_token);
         getUserStatus(response['data']['access_token']);
         navigate("/");
-      } else {
-        alert("Invalid credentials");
-      }
+      
   
     } catch (error) {
       if (error.response && error.response.status === 401) {
