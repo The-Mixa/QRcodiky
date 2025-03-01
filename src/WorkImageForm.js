@@ -19,7 +19,7 @@ const WorkImageForm = ({ workId, setTitle }) => {
   
     const getAuthHeader = async () => {
       try {
-        const accessToken = refresh(localStorage.getItem("refresh_token"));
+        const accessToken = await refresh(localStorage.getItem("refresh_token"));
         return {
           headers: {
             Authorization: `Bearer ${accessToken}`,

@@ -18,22 +18,33 @@ function App() {
   const [register, setRegistered] = useState(true);
 
   useEffect(() => {
-    if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null' && localStorage.getItem("refresh_token") !== null) {
-      var access_token = refresh(localStorage.getItem("refresh_token"));
-      if (access_token != null) {
-        axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {
-          headers: {
-            "authorization": `Bearer ${access_token}`
-          }
-        })
-          .then((response) => {
-            if (response['data']['status'] === "user")
+    const fetchUserStatus = async () => {
+      const refreshToken = localStorage.getItem("refresh_token");
+  
+      if (refreshToken && refreshToken !== "undefined" && refreshToken !== "null") {
+        try {
+          const access_token = await refresh(refreshToken);
+  
+          if (access_token) {
+            const response = await axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {
+              headers: {
+                "Authorization": `Bearer ${access_token}`
+              }
+            });
+
+            if (response.data.status === "user") {
               setUserIsStaff(false);
-            else
-              setUserIsStaff(true)
-          });
+            } else {
+              setUserIsStaff(true);
+            }
+          }
+        } catch (error) {
+          console.error("Ошибка при получении статуса пользователя:", error);
+        }
       }
-    }
+    };
+  
+    fetchUserStatus();
   }, []);
 
   const handleLogOut = () => {

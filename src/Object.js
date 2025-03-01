@@ -26,9 +26,9 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
     description: ''
   });
 
-  const getAuthHeader = () => {
+  const getAuthHeader = async () => {
     try {
-      const accessToken = refresh(localStorage.getItem("refresh_token"));
+      const accessToken = await refresh(localStorage.getItem("refresh_token"));
       return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
       throw new Error('Ошибка авторизации');
@@ -50,7 +50,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   // Отправка новой задачи на сервер
   const handleCreateTask = async () => {
     try {
-      const authConfig =  getAuthHeader();
+      const authConfig = await getAuthHeader();
       const response =  axios.post(
         `${process.env.REACT_APP_HOST}/api/v1/start/`,
         {
@@ -76,7 +76,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   useEffect(() => {
     const fetchUserStatus = async () => {
       try {
-        const accessToken = refresh(localStorage.getItem("refresh_token"));
+        const accessToken = await refresh(localStorage.getItem("refresh_token"));
         if (!accessToken || !registered()) return;
         
         const response = await axios.get(
@@ -97,7 +97,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   if (isStaff){
     const fetchData = async () => {
       try {
-        const authConfig =  getAuthHeader();
+        const authConfig =  await getAuthHeader();
         
         const  statusResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
@@ -176,7 +176,7 @@ useEffect(() => {
   if (!isStaff){
     const fetchData = async () => {
       try {
-        const authConfig =  getAuthHeader();
+        const authConfig = await getAuthHeader();
         
         const statusResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
@@ -290,7 +290,7 @@ useEffect(() => {
                   {showCreateForm ? (
                     <form className="work-form">
                     <center>
-                      <h4>Создать новую задачу</h4>
+                      {/* <h4>Создать новую задачу</h4> */}
                     </center>
                       <div className="form-group">
                         <label className="form-label">Название:</label> 
@@ -332,12 +332,12 @@ useEffect(() => {
                   ) : (
                     <>
                       <p>Нет доступных задач</p>
-                      <button 
+                      {/* <button 
                         onClick={() => setShowCreateForm(true)}
                         className="link"
                       >
                         Создать новую задачу
-                      </button>
+                      </button> */}
                     </>
                   )}
                 </div>
