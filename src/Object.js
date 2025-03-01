@@ -28,7 +28,7 @@ const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
 
   const getAuthHeader = () => {
     try {
-      const accessToken = await refresh(localStorage.getItem("refresh_token"));
+      const accessToken = refresh(localStorage.getItem("refresh_token"));
       return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
       throw new Error('Ошибка авторизации');
