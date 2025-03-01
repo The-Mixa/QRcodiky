@@ -17,7 +17,6 @@ export async function refresh(refresh_token) {
   const access_token = sessionStorage.getItem("access_token");
 
   if (access_token) {
-    localStorage.removeItem("access_token");  
     return access_token; 
   }
 
