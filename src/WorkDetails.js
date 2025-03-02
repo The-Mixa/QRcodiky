@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import WorkImageForm from './WorkImageForm';
 import RatingComponent from './RatingComponent';
@@ -65,7 +65,7 @@ const WorkDetails = ({isStaff, setTitle }) => {
       );
       navigate(-1); // Возвращаемся на предыдущую страницу
     } catch (error) {
-      setError(error.message);
+      setError(error.status);
     }
   };
 
@@ -83,7 +83,7 @@ const WorkDetails = ({isStaff, setTitle }) => {
         );
         navigate(-1); // Возвращаемся на предыдущую страницу
     } catch (error) {
-        setError(error.message);
+        setError(error.status);
     }
 };
 
@@ -92,7 +92,13 @@ const WorkDetails = ({isStaff, setTitle }) => {
   }
 
   if (error) {
-    return <div className="error">Ошибка: {error}</div>;
+    return (<>
+      {error === 400 && <p>На объекте уже работают</p>}
+      <center>
+      <button  className="link" onClick={() => navigate(-1)}>На главную</button>
+      </center>
+
+    </>)
   }
 
   // Если работа не начата
