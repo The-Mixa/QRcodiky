@@ -148,7 +148,7 @@ const WorkDetails = ({isStaff, setTitle }) => {
           <p><b>Описание работы: </b>{work.description}</p>
           <p><b>Выполнил:</b>{work.user.fullname}</p>
 
-          <p className="comment-text"><b>Описание от работника:</b> {comment}</p>
+          <p className="comment-text"><b>Комментарий от работника:</b> {comment}</p>
           <label className="comment-label"><b>Добавить комментарий к оценке:</b></label>
           <textarea
             className="textarea-comment"
