@@ -178,12 +178,14 @@ useEffect(() => {
       try {
         const authConfig = await getAuthHeader();
         
-        const statusResponse = await axios.get(
+        await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
           authConfig
-        );
-        setObjectStatus(statusResponse.data);
-        setTitle(statusResponse.data.object.name);
+        ).then((statusResponse) => {
+          setObjectStatus(statusResponse.data);
+          setTitle(statusResponse?.data?.object?.name || "Noname");
+        })
+        
 
         // Загрузка истории работ
         const historyResponse = await axios.get(
@@ -232,12 +234,13 @@ useEffect(() => {
 
   if (loading) return <div className="loading">Загрузка данных...</div>;
 
-  if (error) {
+  if (error || objectStatus?.status === "busy") {
     return (
       <div className="error-container">
         {error === 404 && <p>Объект не найден</p>}
-        {error === 403 && <p>Доступ запрещен</p>}
+        {error === 403 && <p>Доступ запрещен </p>}
         {error === 401 && <p>Требуется авторизация</p>}
+        {( error === 400 || objectStatus?.status === "busy") && <p>Вы работаете на другом объекте</p>}
         <center>
           <NavLink to="/" className="link">На главную</NavLink>
         </center>
@@ -249,9 +252,23 @@ useEffect(() => {
     <div className="object-details">
       {objectStatus && (
         <div className="object-info">
-          <h2>{objectStatus.object.name}</h2>
-          <p>Адрес: {objectStatus.object.address}</p>
-          <p>Статус объекта: {objectStatus.status}</p>
+          {objectStatus.status !== "busy" ? (
+            <>
+              <h2>{objectStatus?.object?.name || "Noname"}</h2>
+              <p>Адрес: {objectStatus?.object?.address || "Noinfo" }</p>
+              <p>Статус объекта: {objectStatus.status}</p>
+            </>
+          ) : 
+          (
+            <>
+            <p>Вы работаете на другом объекте</p>
+            <center>
+              <NavLink to="/" className="link">На главную</NavLink>
+            </center>
+            </>
+          )}
+        
+
         </div>
       )}
   
