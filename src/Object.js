@@ -250,6 +250,9 @@ useEffect(() => {
 
   return (
     <div className="object-details">
+      
+      <NavLink to="/" className="link">На главную</NavLink>
+      
       {objectStatus && (
         <div className="object-info">
           {objectStatus.status !== "busy" ? (

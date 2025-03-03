@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from "jsqr";
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function CameraComponent({ setTitle }) {
+    const navigate = useNavigate();
     const [qrfind, setQrFind] = useState(false);
     const [codeData, setCodeData] = useState("");
     const webcamRef = useRef(null);
@@ -55,6 +57,8 @@ export default function CameraComponent({ setTitle }) {
 
     return (
         <div>
+            <NavLink to="/" className="link">На главную</NavLink>
+            <br/> 
             <div className="camera-container">
                 <Webcam
                     ref={webcamRef}
