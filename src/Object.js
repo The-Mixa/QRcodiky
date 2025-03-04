@@ -251,7 +251,7 @@ useEffect(() => {
   return (
     <div className="object-details">
       
-      <NavLink to="/camera" className="link"><</NavLink>
+      <NavLink to="/camera" className="link">&lt;</NavLink>
       
       {objectStatus && (
         <div className="object-info">
