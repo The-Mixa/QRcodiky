@@ -342,6 +342,12 @@ body {
   margin-bottom: 32px;
 }
 
+.back-button{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
 .form-label {
   display: block;
   color: #3A3743;

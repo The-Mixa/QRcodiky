@@ -57,7 +57,7 @@ export default function CameraComponent({ setTitle }) {
 
     return (
         <div>
-            <NavLink to="/" className="link">&lt;</NavLink>
+            <NavLink to="/" className="link back-button">&lt;</NavLink>
             <br/> 
             <div className="camera-container">
                 <Webcam
