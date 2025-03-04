@@ -5,6 +5,7 @@ import WorkList from './WorkList';
 import WorkListReview from './WorkListReview';
 import WorkImageForm from './WorkImageForm';
 import { refresh, registered } from './refresh';
+import "./App.css";
 
 const ObjectDetails = ({isStaff, setTitle, setUserIsStaff }) => {
   const navigate = useNavigate();

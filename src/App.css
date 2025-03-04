@@ -342,7 +342,7 @@ body {
   margin-bottom: 32px;
 }
 
-a.back-button{
+.back-button{
   position: absolute;
   top: 15px;
   left: 10px;
@@ -353,6 +353,8 @@ a.back-button{
   font-weight: bolder;
   font-size: 30px;
   border: solid 1px white;
+  background-color:#2196FD !important;
+  cursor: pointer;
 }
 
 .form-label {
