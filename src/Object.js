@@ -376,7 +376,7 @@ useEffect(() => {
               <div key={work.id} className="work-item">
                 <p><b>Название: </b>{work.name || "Без названия"}</p>
                 <p><b>Описание: </b>{work.description || "Нет описания"}</p>
-                <p><b>Выполнил:</b>{work.user.fullname || "не указан"}</p>
+                <p><b>Выполнил:</b>{work?.user?.fullname || "Не указан"}</p>
                 {work.images.length > 0 && (
                   <div className="images">
                     {work.images.map((image) => (

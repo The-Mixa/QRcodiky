@@ -120,7 +120,7 @@ const WorkDetails = ({isStaff, setTitle }) => {
           <p><b>Описание объекта: </b>{work.object.task_description}</p>
           <p><b>Название работы: </b>{work.name}</p>
           <p><b>Описание работы: </b>{work.description}</p>
-          <p><b>Выполнил:</b>{work.user.fullname}</p>
+          <p><b>Выполнил:</b>{work?.user?.fullname || "Не указан"}</p>
         <center>
           <button className='link' onClick={handleStartWork}>Начать работу</button>
         </center>
@@ -148,7 +148,7 @@ const WorkDetails = ({isStaff, setTitle }) => {
           <p><b>Описание объекта: </b>{work.object.task_description}</p>
           <p><b>Название работы: </b>{work.name}</p>
           <p><b>Описание работы: </b>{work.description}</p>
-          <p><b>Выполнил:</b>{work.user.fullname}</p>
+          <p><b>Выполнил:</b>{work?.user?.fullname || "Не указан"}</p>
 
           <p className="comment-text"><b>Комментарий от работника:</b> {comment}</p>
           <label className="comment-label"><b>Добавить комментарий к оценке:</b></label>
