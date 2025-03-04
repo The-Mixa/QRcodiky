@@ -342,13 +342,17 @@ body {
   margin-bottom: 32px;
 }
 
-.back-button{
+a.back-button{
   position: absolute;
-  top: 10px;
+  top: 15px;
   left: 10px;
-  width: fit-content;
-  max-width: 70px;
+  max-width: 70px !important;
   border: 0 !important;
+  text-decoration: none !important;
+  color: white;
+  font-weight: bolder;
+  font-size: 30px;
+  border: solid 1px white;
 }
 
 .form-label {

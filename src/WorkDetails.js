@@ -130,7 +130,7 @@ const WorkDetails = ({isStaff, setTitle }) => {
 
   return (
     <div className="work-details-container">
-      <button onClick={() => navigate(-1)} className='link back-button'>&lt;</button>
+      <button onClick={() => navigate(-1)} className='back-button'>&lt;</button>
       <br/>
       <h1 className="work-details-title">Детали работы</h1>
       {isStaff ? (
