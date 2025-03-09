@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { refresh } from './refresh';
 import axios from "axios";
 import './App.css';
@@ -15,7 +14,6 @@ const WorkImageForm = ({ workId, setTitle }) => {
     const [uploading, setUploading] = useState(false);
     const [comment, setComment] = useState(""); // Для отправки комментария
 
-    const navigate = useNavigate();
   
     const getAuthHeader = async () => {
       try {
@@ -100,7 +98,6 @@ const WorkImageForm = ({ workId, setTitle }) => {
           authConfig
         );
   
-        navigate(-1); // Возвращаемся на предыдущую страницу
       } catch (error) {
         setError(error.message);
       } finally {

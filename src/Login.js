@@ -1,30 +1,15 @@
-// Login.js
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { refresh } from './refresh';
 
-const Login = ({setUserData, setTitle}) => {
-  const navigate = useNavigate();
+const Login = ({ onSuccess, switchToSignup }) => {
   const [credentials, setCredentials] = useState({
-    identifier: '',
+    username: '',
     password: ''
   });
+  const [error, setError] = useState('');
 
-  function getUserStatus(accessToken){
-    axios.get(`${process.env.REACT_APP_HOST}/api/v1/auth/status/`, {headers: {
-        "authorization": `Bearer ${accessToken}`
-    }})
-        .then((response) => {
-          if (response['data']['status'] === "user")
-            setUserData(false);
-          else
-            setUserData(true);
-    });
-    
-  }
-
-  useEffect(() => setTitle("Вход в аккаунт"));
-
+  
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -33,38 +18,60 @@ const Login = ({setUserData, setTitle}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/login/`, credentials);
+      const response = await axios.post(
+        `${process.env.REACT_APP_HOST}/api/v1/auth/login/`,
+        credentials
+      );
       
-        var refresh_token = response['data']['refresh_token'];
-        localStorage.setItem("refresh_token", refresh_token);
-        getUserStatus(response['data']['access_token']);
-        navigate("/");
+      localStorage.setItem("refresh_token", response.data.refresh_token);
+      const accessToken = await refresh(response.data.refresh_token);
       
-  
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        alert("Неверный пароль");
-      } else {
-        console.error('Ошибка при входе:', error);
+      if(accessToken) {
+        const statusResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/auth/status/`,
+          { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+        onSuccess(statusResponse.data.status !== "user");
       }
+    } catch (error) {
+      setError(error.response?.data?.detail || 'Ошибка авторизации');
     }
   };
-  
 
   return (
     <div className='form-container'>
       <form onSubmit={handleSubmit}>
-      <h1 className='form-heading'>Вход</h1>
-
-        <input type="text" name="username" placeholder="Юзернейм или почта" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Пароль" onChange={handleChange} required />
-        <button type="submit">Войти</button>
-        <p className="form-link">        
-          нету аккаунта? <a  href="/signup">Зарегестрироваться</a>
-        </p>
+        <h1 className='form-heading'>Вход</h1>
+        
+        {error && <div className="form-error">{error}</div>}
+        
+        <input
+          type="text"
+          name="username"
+          placeholder="Юзернейм"
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Пароль"
+          onChange={handleChange}
+          required
+        />
+        <button type="submit" className="link">
+          Войти
+        </button>
+        
+        <div className="form-footer">
+          <span>Нет аккаунта? </span>
+          <button type="button" onClick={switchToSignup} className="text-button">
+            Зарегистрироваться
+          </button>
+        </div>
       </form>
     </div>
   );
-}
+};
 
 export default Login;

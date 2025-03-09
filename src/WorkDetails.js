@@ -1,26 +1,18 @@
+// WorkDetails.js
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import WorkImageForm from './WorkImageForm';
 import RatingComponent from './RatingComponent';
 import { refresh } from './refresh';
 import './App.css';
 
-const WorkDetails = ({isStaff, setTitle }) => {
-  const { workId } = useParams();
-  const navigate = useNavigate();
+const WorkDetails = ({ workId, isStaff, setTitle, onBack }) => {
   const [work, setWork] = useState(null);
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comment, setComment] = useState("");
-  const [showStartForm, setShowStartForm] = useState(false);
-  const [formData, setFormData] = useState({
-    object: '',
-    name: '',
-    description: ''
-  });
 
   const getAuthHeader = async () => {
     try {
@@ -53,85 +45,38 @@ const WorkDetails = ({isStaff, setTitle }) => {
     fetchWorkDetails();
   }, [workId, setTitle]);
 
-  const handleStartWork = async () => {
+  const handleRateWork = async () => {
     try {
       const authConfig = await getAuthHeader();
       await axios.post(
-        `${process.env.REACT_APP_HOST}/api/v1/free-work/start/`,
+        `${process.env.REACT_APP_HOST}/api/v1/review/${workId}/`,
         { 
-          work_id: Number(workId)
+          work: workId,
+          rating: rating, 
+          comment: description, 
         },
         authConfig
       );
-      navigate(-1); // Возвращаемся на предыдущую страницу
+      onBack();
     } catch (error) {
       setError(error.status);
     }
   };
 
-  const handleRateWork = async () => {
-    try {
-        const authConfig = await getAuthHeader();
-        await axios.post(
-          `${process.env.REACT_APP_HOST}/api/v1/review/${workId}/`,
-          { 
-            work: workId,
-            rating: rating, 
-            comment: description, 
-          },
-          authConfig
-        );
-        navigate(-1); // Возвращаемся на предыдущую страницу
-    } catch (error) {
-        setError(error.status);
-    }
-};
-
-  if (loading) {
-    return <div className="loading">Загрузка данных о работе...</div>;
-  }
+  if (loading) return <div className="loading">Загрузка данных о работе...</div>;
 
   if (error) {
-    return (<>
-      {error === 400 && <p>На объекте уже работают</p>}
-      <center>
-      <button  className="link" onClick={() => navigate(-1)}>На главную</button>
-      </center>
-
-    </>)
-  }
-
-  // Если работа не начата
-  if (work && work.start_time === null && !isStaff) {
     return (
-      <div className="work-image-form" style={{backgroundColor: "lightgrey"}}>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        
-          <h2>Информация о работе</h2>
-          <p><b>Объект: </b>{work.object.name}</p>
-          <p><b>Адрес: </b>{work.object.address}</p>
-          <p><b>Описание объекта: </b>{work.object.task_description}</p>
-          <p><b>Название работы: </b>{work.name}</p>
-          <p><b>Описание работы: </b>{work.description}</p>
-          <p><b>Выполнил:</b>{work?.user?.fullname || "Не указан"}</p>
-        <center>
-          <button className='link' onClick={handleStartWork}>Начать работу</button>
-        </center>
+      <div>
+        {error === 400 && <p>На объекте уже работают</p>}
+        <button className="link" onClick={onBack}>Назад</button>
       </div>
     );
   }
 
   return (
     <div className="work-details-container">
-      <button onClick={() => navigate(-1)} className='back-button'>&lt;</button>
-      <br/>
+      <button onClick={onBack} className='back-button'>&lt;</button>
       <h1 className="work-details-title">Детали работы</h1>
       {isStaff ? (
         <div className="staff-review-section">
@@ -166,6 +111,7 @@ const WorkDetails = ({isStaff, setTitle }) => {
         <WorkImageForm 
           workDescription={description} 
           workId={workId} 
+          onComplete={onBack}
         />
       )}
     </div>

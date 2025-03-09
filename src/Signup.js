@@ -1,70 +1,99 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { refresh } from './refresh';
 
-
-const Signup = () => {
-  const navigate = useNavigate();
+const Signup = ({ onSuccess, switchToLogin }) => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
     confirmPassword: ''
   });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const logIn = async () => {
-    await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/login/`, {"username": formData['username'], "password": formData['password']})
-        .then((response) => {
-          console.log(response);
-          if (response['data']['refresh_token'] !== undefined){
-            localStorage.setItem("refresh_token", response['data']['refresh_token']);
-            navigate('/');
-          };
-        });
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (formData["password"] === formData["confirmPassword"]){
-        await axios.post(`${process.env.REACT_APP_HOST}/api/v1/auth/register/`, {"username": formData['username'], "password": formData['password']})
-        .then(async (response) => {
-          if (response['data']['message'] === "User registred successfully"){
-            await logIn();
-          }
-          
-        });
+      if(formData.password !== formData.confirmPassword) {
+        throw new Error('Пароли не совпадают');
       }
-      else{
-        alert("Пароли не совпадают");
-      }
+
+      await axios.post(
+        `${process.env.REACT_APP_HOST}/api/v1/auth/register/`,
+        {
+          username: formData.username,
+          password: formData.password
+        }
+      );
+
+      // Автоматический вход после регистрации
+      const loginResponse = await axios.post(
+        `${process.env.REACT_APP_HOST}/api/v1/auth/login/`,
+        {
+          username: formData.username,
+          password: formData.password
+        }
+      );
+
+      localStorage.setItem("refresh_token", loginResponse.data.refresh_token);
+      const accessToken = await refresh(loginResponse.data.refresh_token);
       
+      if(accessToken) {
+        const statusResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/auth/status/`,
+          { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+        onSuccess(statusResponse.data.status !== "user");
+      }
     } catch (error) {
-      console.error('Ошибка при регистрации:', error);
+      setError(error.response?.data?.detail || error.message);
     }
-    
   };
 
   return (
     <div className='form-container'>
-
       <form onSubmit={handleSubmit}>
-      <h1 className='form-heading'>Регистрация</h1>
-
-  
-        <input type="text" name="username" placeholder="Юзернейм" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Пароль" onChange={handleChange} required />
-        <input type="password" name="confirmPassword" placeholder="Подтверждение пароля" onChange={handleChange} required />
-        <button type="submit">Зарегистрироваться</button>
-        <p className="form-link">        
-          уже есть аккаунт? <a href="/login">Войти</a>
-        </p>
-    </form>
+        <h1 className='form-heading'>Регистрация</h1>
+        
+        {error && <div className="form-error">{error}</div>}
+        
+        <input
+          type="text"
+          name="username"
+          placeholder="Юзернейм"
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Пароль"
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Повторите пароль"
+          onChange={handleChange}
+          required
+        />
+        <button type="submit" className="link">
+          Зарегистрироваться
+        </button>
+        
+        <div className="form-footer">
+          <span>Уже есть аккаунт? </span>
+          <button type="button" onClick={switchToLogin} className="text-button">
+            Войти
+          </button>
+        </div>
+      </form>
     </div>
   );
-}
+};
 
 export default Signup;
