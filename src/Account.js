@@ -51,27 +51,27 @@ const [userData, setUserData] = useState(null);
 
   return (
     <>
-    <center><h1>Профиль</h1></center>
+    <center><h1>Ваш аккаунт</h1></center>
     <div className="profile-container">
             
         <div className="work-item object-info prrr">
         <h2 style={{margin: "0px"}}>Имя</h2>
-        <div style={{padding: "10px", paddingTop: "0px", paddingBottom: "6px"}}>
-          <p>{userData.fullname || 'Не указано'}</p>
+        <div style={{padding: "10px", paddingTop: "0px", paddingBottom: "6px", backgroundColor: "#DBE9EE", borderBottomLeftRadius: "30px", borderBottomRightRadius: "30px"}}>
+        <p>{userData.fullname || 'Не указано'}</p>
         </div>
         </div>
 
         <div className="work-item object-info prrr">
-        <h2 style={{margin: "0px"}}>Никнейм</h2>
-        <div style={{padding: "10px", paddingTop: "0px", paddingBottom: "6px"}}>
-          <p>{userData.username}</p>
+        <h2 style={{margin: "0px"}}>Логин</h2>
+        <div style={{padding: "10px", paddingTop: "0px", paddingBottom: "6px", backgroundColor: "#DBE9EE", borderBottomLeftRadius: "30px", borderBottomRightRadius: "30px"}}>
+        <p>{userData.username}</p>
           </div>
         </div>
 
         <div className="work-item object-info prrr">
-          <h2 style={{margin: "0px"}}>Ваш рейтинг</h2>
-          <div style={{padding: "10px", paddingTop: "0px", paddingBottom: "6px"}}>
-            <p>{userData.rating || '0.0'} /5.0</p>
+          <h2 style={{margin: "0px"}}>Рейтинг</h2>
+          <div style={{padding: "10px", paddingTop: "0px", paddingBottom: "6px", backgroundColor: "#DBE9EE", borderBottomLeftRadius: "30px", borderBottomRightRadius: "30px"}}>
+          <p>{userData.rating || '0.0'} /5.0</p>
           </div>
         </div>
       </div>
