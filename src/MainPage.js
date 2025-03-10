@@ -6,6 +6,7 @@ import './App.css';
 import TodoPage from './TodoPage';
 import Account from './Account';
 import HistoryPage from './HistoryPage';
+import logo from "./yasmin 1.svg"
 
 export default function MainPage({ isStaff, onLogOut }) {
   const [activeBlock, setActiveBlock] = useState('camera');
@@ -49,7 +50,7 @@ export default function MainPage({ isStaff, onLogOut }) {
       case "profile":
         return (
           <div className="page-content">
-            <Account/>
+            <Account onLogOut={onLogOut}/>
           </div>
         );
       default:
@@ -60,7 +61,8 @@ export default function MainPage({ isStaff, onLogOut }) {
   return (
     <>
       <header className="header">
-        <h3>YASMIN</h3>
+        <img src={logo}></img>
+        <h3>Yasmin</h3>
       </header>
 
       <div className="content-wrapper">

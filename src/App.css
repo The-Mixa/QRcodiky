@@ -3,7 +3,7 @@ form {
   flex-direction: column;
   margin: 10px;
   margin-top: 50px;
-  max-width: 500px;
+  max-width: 80vw;
   background-color: #306BAC;
   padding: 10px;
   border-radius: 10px;
@@ -51,7 +51,7 @@ form button {
 
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #FFFFFF; /* Белый фон */
+  background-color: #DBE9EE; /* Белый фон */
   color: #3A3743; /* Темный текст */
   overflow-x: hidden;
 }
@@ -161,6 +161,10 @@ body {
   margin: 15px;
   width: calc(100vw - 30px);
   margin-top: 15vh;
+  background-color: #DBE9EE;
+}
+.content-wrapper{
+  background-color: #DBE9EE;
 }
 
 .camera-container video, .camera-container img {
@@ -173,13 +177,28 @@ body {
   margin: auto;
 }
 
-/* WorkList.css */
+.work-info-section{
+  padding: 10px;
+}
 
+.object-name{
+  color: white;
+  text-align: left !important;
+}
+.work-item p{
+  font-size: 20px;
+  text-align: center;
+  font-weight: bolder;
+  margin: 5px;
+}
 /* Основной контейнер */
 .work-list-container {
-  padding: 20px;
-  background-color: #FFFFFF; /* Основной цвет фона */
+  padding: 20px 0;
   border-radius: 12px;
+}
+
+.profile-container .object-info h2{
+  text-align: center;
 }
 
 /* Заголовок */
@@ -198,8 +217,8 @@ body {
 
 /* Элемент работы */
 .work-item {
-  background-color: #C2E2FE; /* Белый фон */
-  border-radius: 8px;
+  background-color: #DBE9EE; /* Белый фон */
+  border-radius: 20px;
   margin-bottom: 15px;
   margin-left: 10px;
   margin-right: 10px;
@@ -227,6 +246,15 @@ body {
   border-radius: 15px;
   padding: 15px;
   color: white;
+}
+
+.work-main-info{
+  background-color: #306BAC;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  
+  border-radius: 20px;
 }
 
 /* Название работы */
@@ -447,6 +475,7 @@ body {
 .image-preview {
   width: 100%;
   object-fit: cover;
+  text-align: left;
 }
 
 .upload-date {
@@ -598,10 +627,7 @@ body {
 }
 
 .form-container {
-  padding: 20px;
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
 }
 
 .form-error {
@@ -728,7 +754,7 @@ input {
 
 .object-container {
   padding: 20px;
-  height: calc(100vh - 120px);
+  min-height: calc(100vh - 300px);
   padding-top: 100px;
   padding-bottom: 100px;
 
@@ -738,6 +764,7 @@ input {
   padding-top: 100px;
   padding-left: 20px;
   padding-right: 20px;
+  background-color: #DBE9EE;
 }
 
 .close-button {
@@ -778,7 +805,7 @@ input {
   border: none;
   border-radius: 15px;
   padding: 10;
-  min-width: 60px; /* Минимальная ширина кнопок */
+  max-width: 60px;
   cursor: pointer;
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -836,8 +863,31 @@ input {
 }
 
 .profile-container{
-  background-color: #90CBFE;
-  padding: 20px;
+  background-color: #C0D6DF;
+  padding: 10px;
+  padding-left: 0px;
+  padding-right: 0px;
   border-radius: 30px;
-  margin-top: 100px;
+}
+
+.out-button{
+  background-color: grey;
+  padding: 10px;
+  border-radius: 10px;
+
+  border: 0;
+  color: white;
+  margin-top: 10px;
+  align-self: center;
+}
+.header{
+  display: flex;
+  flex-direction: row;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.header h3{
+  transform: translateX(-39px);
+  font-size: 30px
 }

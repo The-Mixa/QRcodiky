@@ -3,7 +3,7 @@ import './App.css';
 import { refresh } from './refresh';
 import axios from 'axios';
 
-export default function Account() {
+export default function Account({ onLogOut }) {
 const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,6 +75,9 @@ const [userData, setUserData] = useState(null);
           </div>
         </div>
       </div>
+      <center>
+      <button className='out-button' onClick={onLogOut}>Выйти из аккаунта</button>
+      </center>
       </>
   );
 }
