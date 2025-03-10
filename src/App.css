@@ -109,7 +109,7 @@ body {
   left: 20px;
   max-width: calc(100vw - 40px);
   width: calc(100vw - 40px);
-  border-radius: 20px;
+  border-radius: 30px;;
   z-index: 2000;
 }
 
@@ -157,7 +157,7 @@ body {
 }
 
 .camera-container {
-  border-radius: 15px;
+  border-radius: 30px;;
   margin: 15px;
   width: calc(100vw - 30px);
   margin-top: 15vh;
@@ -170,24 +170,20 @@ body {
 .camera-container video, .camera-container img {
   max-width: calc(100vw - 30px);
   max-height: calc(100vw - 30px);
-  border-radius: 15px;
+  border-radius: 30px;;
 }
 
 .center-align {
   margin: auto;
 }
 
-.work-info-section{
-  padding: 10px;
-}
 
 .object-name{
   color: white;
-  text-align: left !important;
 }
 .work-item p{
   font-size: 20px;
-  text-align: center;
+  text-align: l;
   font-weight: bolder;
   margin: 5px;
 }
@@ -195,6 +191,15 @@ body {
 .work-list-container {
   padding: 20px 0;
   border-radius: 12px;
+}
+
+.todo-container h2{
+  text-align: center;
+  font-size: 30px;
+}
+
+.prrr p{
+  text-align: center !important;
 }
 
 .profile-container .object-info h2{
@@ -218,7 +223,7 @@ body {
 /* Элемент работы */
 .work-item {
   background-color: #DBE9EE; /* Белый фон */
-  border-radius: 20px;
+  border-radius: 30px;
   margin-bottom: 15px;
   margin-left: 10px;
   margin-right: 10px;
@@ -243,7 +248,7 @@ body {
 .work-content {
   display: flex;
   flex-direction: column;
-  border-radius: 15px;
+  border-radius: 30px;;
   padding: 15px;
   color: white;
 }
@@ -254,7 +259,7 @@ body {
   display: flex;
   flex-direction: row;
   
-  border-radius: 20px;
+  border-radius: 30px;
 }
 
 /* Название работы */
@@ -287,10 +292,15 @@ body {
 }
 
 .work-details-container {
-  background-color: white;
+  background-color: #C0D6DF;
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.work-details-expanded{
+  background-color: #DBE9EE;
+  border-radius: 30px;;
 }
 
 .work-details-title {
@@ -374,7 +384,7 @@ body {
   border: solid 1px white;
   background-color: #306BAC !important;
   cursor: pointer;
-  border-radius: 20px;
+  border-radius: 30px;;
 }
 
 .form-label {
@@ -803,7 +813,7 @@ input {
 .nav-item {
   background: #DBE9EE; /* Светло-голубой фон кнопок */
   border: none;
-  border-radius: 15px;
+  border-radius: 20px;;
   padding: 10;
   max-width: 60px;
   cursor: pointer;
@@ -851,13 +861,13 @@ input {
 
 .object-info{
   background-color: #C2E2FE;
-  border-radius: 15px;
+  border-radius: 30px;;
 
 }
 
 .object-info h2{
   background-color: #306BAC;
-  border-radius: 15px;
+  border-radius: 30px;;
   padding: 10px;
   color: white;
 }
@@ -890,4 +900,148 @@ input {
 .header h3{
   transform: translateX(-39px);
   font-size: 30px
+}
+
+.work-info-section p{
+  font-size: 15px !important;
+}
+
+.work-info-section{
+  gap: 2px;
+  padding: 10px;
+
+}
+
+.object-name{
+  text-align: right;
+  min-width: calc(70vw);
+  font-size: 15px !important;
+}
+
+.arrow-icon {
+  margin-left: auto;
+  padding-left: 15px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: rotate(0deg);
+}
+
+.arrow-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.arrow-icon svg {
+  display: block;
+}
+
+
+.work-details-expanded {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: 
+    max-height 0.3s ease-in-out,
+    opacity 0.2s ease-in-out,
+    padding 0.3s ease-in-out;
+}
+
+.work-item.expanded .work-details-expanded {
+  max-height: 1000px; /* Значение больше предполагаемой высоты контента */
+  opacity: 1;
+}
+
+.work-details-content {
+  transform: translateY(-10px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.work-item.expanded .work-details-content {
+  transform: translateY(0);
+}
+
+.work-item {
+  transition: box-shadow 0.3s ease;
+}
+
+.work-details-expanded {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: 
+    max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease,
+    padding 0.3s ease;
+}
+
+.work-item.expanded .work-details-expanded {
+  max-height: 1500px; /* Максимальная возможная высота */
+  opacity: 1;
+}
+
+.work-details-content {
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: 
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.work-item.expanded .work-details-content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.arrow-icon {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Убедитесь что эти стили добавлены в App.css */
+.work-details-expanded {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-10px);
+  transition: 
+    max-height 0.4s ease-in-out,
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.work-item.expanded .work-details-expanded {
+  max-height: 1500px; /* Значение больше максимальной возможной высоты */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.work-item {
+  transition: box-shadow 0.3s ease;
+}
+
+.work-details-expanded {
+  transition: all 0.4s ease-in-out !important;
+}
+
+/* Добавьте в App.css */
+.work-details-expanded {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: 
+    max-height 0.5s ease-in-out,
+    opacity 0.3s ease 0.1s;
+}
+
+.work-item.expanded .work-details-expanded {
+  max-height: 1000px; /* Должно быть больше реальной высоты контента */
+  opacity: 1;
+}
+
+.details-content {
+  transform: translateY(-10px);
+  transition: transform 0.3s ease;
+  opacity: 0;
+}
+
+.work-item.expanded .details-content {
+  transform: translateY(0);
+  opacity: 1;
 }

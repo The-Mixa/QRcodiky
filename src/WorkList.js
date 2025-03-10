@@ -92,10 +92,11 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
                   <div style={{minWidth: "20px", minHeight: "20px", maxHeight: "20px", marginTop: "20px", marginRight: "20px", backgroundColor: color, borderRadius: "10px"}}></div>
                   <div>
                     <h3 className="work-name">{work.name}</h3>
-                    <p className="object-name">
+                    <p className="object-name" style={{color: color}}>
                       {work.object?.name || 'Объект не указан'}
                     </p>
                   </div>
+                  
                   
                 </div>
                 
@@ -110,12 +111,11 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
 
               {expandedWork === work.id && (
                 <div className="work-details-expanded">
-                  {loadingDetails ? (
-                    <div className="loading-details">
-                      <div className="spinner"></div>
-                      Загрузка данных...
-                    </div>
-                  ) : renderWorkDetails(work.id)}
+                  <div className="details-content">
+                    {loadingDetails ? (
+                      <div className="loading-details">...</div>
+                    ) : renderWorkDetails(work.id)}
+                  </div>
                 </div>
               )}
             </li>

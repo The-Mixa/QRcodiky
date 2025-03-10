@@ -8,8 +8,8 @@ import tasks from "./tasks-db 1.svg";
 
 export default function NavPanel({ activeBlock, onChangeBlock }) {
   const blocks = [
-    { id: 'camera', label: search},
     { id: 'history', label: history},
+    { id: 'camera', label: search},
     { id: 'tasks', label: tasks},
     { id: 'profile', label: profile}
   ];

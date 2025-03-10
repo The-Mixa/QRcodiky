@@ -52,13 +52,13 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="object-container">
+    <div className="todo-container">
       <h2>История работ</h2>
       
       <WorkList 
         works={works}
         onWorkSelect={(id) => {/* Обработка выбора */}}
-        color="green"
+        color="#12b504"
       />
     </div>
   );
