@@ -1,12 +1,17 @@
 import React from 'react';
 import './App.css';
+import profile from "./profile-db 1.svg";
+import history from "./history-db 1.svg";
+import search from "./search-db 1.svg";
+import tasks from "./tasks-db 1.svg";
+
 
 export default function NavPanel({ activeBlock, onChangeBlock }) {
   const blocks = [
-    { id: 'camera', label: 'Камера', icon: '📷' },
-    { id: 'history', label: 'История', icon: '📅' },
-    { id: 'tasks', label: 'Задачи', icon: '✅' },
-    { id: 'profile', label: 'Профиль', icon: '👤' }
+    { id: 'camera', label: search},
+    { id: 'history', label: history},
+    { id: 'tasks', label: tasks},
+    { id: 'profile', label: profile}
   ];
 
   return (
@@ -17,8 +22,7 @@ export default function NavPanel({ activeBlock, onChangeBlock }) {
           className={`nav-item ${activeBlock === block.id ? 'active' : ''}`}
           onClick={() => onChangeBlock(block.id)}
         >
-          <span className="nav-icon">{block.icon}</span>
-          <span className="nav-label">{block.label}</span>
+          <img src={block.label}></img>
         </button>
       ))}
     </nav>

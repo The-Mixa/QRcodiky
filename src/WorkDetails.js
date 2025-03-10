@@ -76,10 +76,11 @@ const WorkDetails = ({ workId, isStaff, setTitle, onBack }) => {
 
   return (
     <div className="work-details-container">
-      <button onClick={onBack} className='back-button'>&lt;</button>
       <h1 className="work-details-title">Детали работы</h1>
       {isStaff ? (
         <div className="staff-review-section">
+                <button onClick={onBack} className='back-button'>&lt;</button>
+
           {work.images.length > 0 && (
                   <div className="images">
                     {work.images.map((image) => (

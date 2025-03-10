@@ -4,7 +4,7 @@ form {
   margin: 10px;
   margin-top: 50px;
   max-width: 500px;
-  background-color: #2196FD;
+  background-color: #306BAC;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0px 0px 20px 0px rgba(34, 60, 80, 0.4);
@@ -56,25 +56,6 @@ body {
   overflow-x: hidden;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.header h3 {
-  width: 100%;
-}
-
-.header {
-  background-color: #2196FD;
-  color: white;
-  padding: 15px 0;
-  max-width: 100vw;
-  text-align: center;
-  font-size: 24px;
-  position: relative; /* Добавлено для позиционирования кнопки */
-}
-
 .home-button {
   position: absolute;
   left: 20px;
@@ -93,7 +74,7 @@ body {
 }
 
 .button {
-  background-color: #2196FD; /* Синий цвет кнопки */
+  background-color: #306BAC; /* Синий цвет кнопки */
   color: #FFFFFF; /* Цвет текста на кнопке */
   border: none;
   padding: 10px 20px;
@@ -118,22 +99,28 @@ body {
 }
 
 .header {
-  background-color: #2196FD; /* Синий фон */
+  background-color: #306BAC; /* Синий фон */
   text-align: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень для header */
-  width: 100vw;
-  min-width: 100vw;
   padding-top: 15px;
   padding-bottom: 15px;
+  position: fixed;
+  top: 30px;
+  left: 20px;
+  max-width: calc(100vw - 40px);
+  width: calc(100vw - 40px);
+  border-radius: 20px;
+  z-index: 2000;
 }
 
 .header h3 {
   color: #FFFFFF; /* Белый текст */
-  margin: 0; /* Убираем отступы */
+  margin: auto; /* Убираем отступы */
+  width: fit-content
 }
 
 .link {
-  background-color: #2196FD; /* Синяя кнопка */
+  background-color: #306BAC; /* Синяя кнопка */
   color: #FFFFFF; /* Белый текст */
   padding: 10px 20px; /* Отступы */
   border: none; /* Убираем рамку */
@@ -216,7 +203,6 @@ body {
   margin-bottom: 15px;
   margin-left: 10px;
   margin-right: 10px;
-  padding: 10px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
@@ -238,22 +224,32 @@ body {
 .work-content {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  border-radius: 15px;
+  padding: 15px;
+  color: white;
 }
 
 /* Название работы */
 .work-name {
-  color: #2196FD; /* Синий цвет */
+  color: white; /* Синий цвет */
   font-size: 20px;
   margin: 0;
 }
 
 /* Описание работы */
 .work-description {
-  color: #3A3743; /* Основной цвет текста */
+  color: white; /* Основной цвет текста */
   font-size: 16px;
   margin: 0;
 }
+
+.work-content{
+  background-color: #306BAC;
+  color: white !important;
+  display: flex;
+  flex-direction: row;
+}
+
 
 /* Сообщение об отсутствии работ */
 .work-list-empty {
@@ -296,9 +292,9 @@ body {
 }
 
 .textarea-comment {
-  min-width: calc(100vw - 115px);
+  min-width: calc(100vw - 160px);
   padding: 12px;
-  border: 2px solid #2196FD;
+  border: 2px solid #306BAC;
   border-radius: 6px;
   margin-bottom: 16px;
   min-height: 100px;
@@ -306,7 +302,7 @@ body {
 }
 
 .rate-button {
-  background-color: #2196FD;
+  background-color: #306BAC;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -339,7 +335,6 @@ body {
 }
 
 .back-button {
-  position: absolute;
   top: 15px;
   left: 10px;
   max-width: 70px !important;
@@ -349,13 +344,14 @@ body {
   font-weight: bolder;
   font-size: 30px;
   border: solid 1px white;
-  background-color: #2196FD !important;
+  background-color: #306BAC !important;
   cursor: pointer;
+  border-radius: 20px;
 }
 
 .form-label {
   display: block;
-  color: #3A3743;
+  color: white;
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -367,7 +363,7 @@ body {
 .form-textarea {
   min-width: calc(100% - 30px);
   padding: 12px;
-  border: 2px solid #2196FD;
+  border: 2px solid #306BAC;
   border-radius: 6px;
   margin-bottom: 16px;
   min-height: 100px;
@@ -386,13 +382,13 @@ body {
 
 .file-input {
   padding: 8px;
-  border: 2px solid #2196FD;
+  border: 2px solid #306BAC;
   border-radius: 6px;
   width: calc(100% - 20px);
 }
 
 .upload-button {
-  background-color: #2196FD;
+  background-color: #306BAC;
   color: white;
   padding: 8px 16px;
   border: none;
@@ -472,25 +468,13 @@ body {
 }
 
 .star.active {
-  color: #2196FD;
+  color: #306BAC;
 }
 
 .star:hover {
   color: #1976D2;
 }
 
-.object-info {
-  padding: 20px;
-  margin: 10px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  margin-bottom: 30px;
-}
-
-.object-info h2 {
-  color: #333;
-  margin-bottom: 10px;
-}
 
 .works-section {
   margin-top: 25px;
@@ -565,12 +549,12 @@ body {
   bottom: 5px;
   width: 25%;
   height: 4px;
-  background: #2196FD;
+  background: #306BAC;
   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-button.active {
-  background: #2196FD;
+  background: #306BAC;
 }
 
 .overlay {
@@ -637,10 +621,14 @@ body {
 .text-button {
   background: none;
   border: none;
-  color: #2196FD;
+  color: white;
   text-decoration: underline;
   cursor: pointer;
   padding: 0 5px;
+}
+
+.form-footer{
+  color: white;
 }
 
 input {
@@ -648,7 +636,6 @@ input {
   padding: 12px;
   border: 2px solid #ddd;
   border-radius: 8px;
-  width: 100%;
   box-sizing: border-box;
 }
 
@@ -717,7 +704,6 @@ input {
 .camera-container {
   position: relative;
   width: 100%;
-  height: 100%;
 }
 
 .camera-view {
@@ -743,12 +729,20 @@ input {
 .object-container {
   padding: 20px;
   height: calc(100vh - 120px);
-  overflow-y: auto;
+  padding-top: 100px;
+  padding-bottom: 100px;
+
+}
+
+.page-content{
+  padding-top: 100px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .close-button {
   position: absolute;
-  top: 10px;
+  top: 115px;
   right: 10px;
   z-index: 100;
   background: #ff4444;
@@ -758,4 +752,92 @@ input {
   width: 30px;
   height: 30px;
   cursor: pointer;
+}
+
+/* Добавьте в App.css */
+.bottom-nav {
+  position: fixed;
+  bottom: 20px; /* Отступ от нижнего края */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #306BAC; /* Синий фон панели */
+  border-radius: 25px; /* Скругление углов для эффекта "островка" */
+  padding: 8px 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  max-width: calc(100vw - 80px);
+  min-width: calc(100vw - 80px);
+  display: flex;
+  justify-content: space-around;
+}
+
+.nav-item {
+  background: #DBE9EE; /* Светло-голубой фон кнопок */
+  border: none;
+  border-radius: 15px;
+  padding: 10;
+  min-width: 60px; /* Минимальная ширина кнопок */
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #306BAC; /* Цвет текста/иконок */
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item.active {
+  background-color: #7AC74F;
+}
+
+
+.nav-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 24px;
+  margin-bottom: 4px;
+  transition: transform 0.3s ease;
+}
+
+.nav-label {
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+  font-weight: 500;
+  transition: transform 0.3s ease;
+}
+
+/* Анимация при переключении */
+.nav-item.active .nav-icon {
+  transform: scale(1.05);
+}
+
+
+.object-info{
+  background-color: #C2E2FE;
+  border-radius: 15px;
+
+}
+
+.object-info h2{
+  background-color: #306BAC;
+  border-radius: 15px;
+  padding: 10px;
+  color: white;
+}
+
+.profile-container{
+  background-color: #90CBFE;
+  padding: 20px;
+  border-radius: 30px;
+  margin-top: 100px;
 }

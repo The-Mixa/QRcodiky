@@ -137,13 +137,14 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       <button className="close-button" onClick={onClose}>
         ×
       </button>
-      <h2>Детали объекта {objectId}</h2>
       
       {objectStatus && (
         <div className="object-info">
           <h2>{objectStatus?.object?.name || "Noname"}</h2>
-          <p>Адрес: {objectStatus?.object?.address || "Noinfo"}</p>
-          <p>Статус: {objectStatus.status}</p>
+          <div style={{padding: "20px", paddingTop: "0px"}} >
+            <p><b>Адрес:</b> {objectStatus?.object?.address || "Noinfo"}</p>
+            <p><b>Статус:</b> {objectStatus.status}</p>
+          </div>
         </div>
       )}
 
@@ -187,6 +188,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
                       <WorkList 
                         works={availableTasks}
                         onWorkSelect={setSelectedWorkId}
+                        color={"red"}
                       />
                     </>
                   ) : (
@@ -232,19 +234,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
         </>
       )}
 
-      <div className="work-history">
-        <h3>История работ</h3>
-        {workHistory.map(work => (
-          <div key={work.id} className="work-item">
-            <p>{work.name} - {work.description}</p>
-            {work.review && (
-              <div className="review">
-                Оценка: {work.review.rating}, Комментарий: {work.review.comment}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      
     </div>
   );
 }

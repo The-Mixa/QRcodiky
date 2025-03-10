@@ -14,6 +14,8 @@ const WorkListReview = ({ works, isStaff, onWorkSelect }) => {
               onClick={() => onWorkSelect(work.id)}
             >
               <div className="work-content">
+              <div style={{minWidth: "20px", minHeight: "20px", backgroundColor: "yellow", borderRadius: "10px", maxWidth: "20px", maxHeight: "20px", marginRight: "20px"}}></div>
+                <div>
                 {work.images.length > 0 && (
                   <div className="images">
                     {work.images.map((image) => (
@@ -21,8 +23,9 @@ const WorkListReview = ({ works, isStaff, onWorkSelect }) => {
                     ))}
                   </div>
                 )}
-                <h3 className="work-name">{work.name}</h3>
+                <h2 className="work-name">{work.name}</h2>
                 <p className="work-description">{work.description}</p>
+                </div>
               </div>
             </li>
           ))}

@@ -3,6 +3,9 @@ import CameraMy from "./CameraMy";
 import ObjectDetails from "./Object";
 import NavPanel from "./NavPanel";
 import './App.css';
+import TodoPage from './TodoPage';
+import Account from './Account';
+import HistoryPage from './HistoryPage';
 
 export default function MainPage({ isStaff, onLogOut }) {
   const [activeBlock, setActiveBlock] = useState('camera');
@@ -38,16 +41,15 @@ export default function MainPage({ isStaff, onLogOut }) {
     // Для остальных вкладок
     switch(activeBlock) {
       case 'history':
-        return <div className="page-content">История работ</div>;
+        return <div className='page-content'><HistoryPage/></div>
       case 'tasks':
-        return <div className="page-content">Текущие задачи</div>;
-      case 'profile':
+        return <div className="page-content">
+        <TodoPage isStaff={isStaff}/>
+      </div>;
+      case "profile":
         return (
           <div className="page-content">
-            Профиль пользователя
-            <button className="logout-button" onClick={onLogOut}>
-              Выйти
-            </button>
+            <Account/>
           </div>
         );
       default:

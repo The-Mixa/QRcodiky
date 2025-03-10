@@ -2,7 +2,7 @@
 import React from 'react';
 import './App.css';
 
-const WorkList = ({ works, isStaff, onWorkSelect }) => {
+const WorkList = ({ works, isStaff, onWorkSelect, color }) => {
   return (
     <div className="work-list-container">
       {works.length > 0 ? (
@@ -14,8 +14,12 @@ const WorkList = ({ works, isStaff, onWorkSelect }) => {
               onClick={() => onWorkSelect(work.id)}
             >
               <div className="work-content">
-                <h3 className="work-name">{work.name}</h3>
-                <p className="work-description">{work.description}</p>
+                <div style={{minWidth: "20px", minHeight: "20px", backgroundColor: color, borderRadius: "10px", maxWidth: "20px", maxHeight: "20px", marginRight: "20px"}}></div>
+
+                <div>
+                  <h3 className="work-name">{work.name}</h3>
+                  <p className="work-description">{work.description}</p>
+                </div>
               </div>
             </li>
           ))}
