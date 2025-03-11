@@ -733,6 +733,15 @@ input {
   width: 100%;
 }
 
+.review-button{
+  background-color: #306BAC;
+  color: white;
+  border: 0;
+  border-radius: 20px;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
 .blocks-container {
   display: flex;
   width: 400%; /* 4 блока по 100% ширины экрана */
