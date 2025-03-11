@@ -139,7 +139,7 @@ const WorkImageForm = ({ workId, setTitle, onComplete }) => {
                 <br />
 
                 <div className="file-input-container">
-                    <div className="thumbnails">
+                    <div className="work-image-grid">
                         {images.map(image => (
                             <div 
                                 key={image.id} 
