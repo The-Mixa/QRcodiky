@@ -1,6 +1,7 @@
 // WorkListReview.js
 import React from 'react';
 import './App.css';
+import arrow from "./unwrap-green 1.svg";
 
 const WorkListReview = ({ works, isStaff, onWorkSelect }) => {
   return (
@@ -13,20 +14,35 @@ const WorkListReview = ({ works, isStaff, onWorkSelect }) => {
               className="work-item"
               onClick={() => onWorkSelect(work.id)}
             >
-              <div className="work-content">
-              <div style={{minWidth: "20px", minHeight: "20px", backgroundColor: "yellow", borderRadius: "10px", maxWidth: "20px", maxHeight: "20px", marginRight: "20px"}}></div>
-                <div>
-                {work.images.length > 0 && (
-                  <div className="images">
-                    {work.images.map((image) => (
-                      <img key={image.id} src={image.image} alt={`Work image ${image.id}`} />
-                    ))}
-                  </div>
-                )}
-                <h2 className="work-name">{work.name}</h2>
-                <p className="work-description">{work.description}</p>
-                </div>
-              </div>
+              <div className="work-main-info">
+                                <div style={{
+                                  display: "flex", 
+                                  flexDirection: "column", 
+                                  justifyContent: "space-around"
+                                }}>
+                                  <div style={{
+                                    minWidth: "20px",
+                                    minHeight: "20px",
+                                    maxHeight: "20px",
+                                    marginRight: "20px",
+                                    backgroundColor: "yellow",
+                                    borderRadius: "10px"
+                                  }}></div>
+                                </div>
+                                <div style={{width: "100%"}}>
+                                  <h3 className="work-name">{work.name}</h3>
+                                  <p className="object-name">
+                                    {work.object?.name || 'Объект не указан'}
+                                  </p>
+                                </div>
+                                <div className='arrow-container' style={{
+                                  display: "flex", 
+                                  flexDirection: "column", 
+                                  justifyContent: "space-around"
+                                }}>
+                                  <img src={arrow} alt="Стрелка раскрытия"></img>
+                                </div>
+                              </div>
             </li>
           ))}
         </ul>

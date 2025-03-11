@@ -4,17 +4,16 @@ import WorkList from './WorkList';
 import WorkListReview from './WorkListReview';
 import WorkImageForm from './WorkImageForm';
 import WorkDetails from './WorkDetails';
-import { refresh, registered } from './refresh';
+import { refresh } from './refresh';
 import "./App.css";
+import backArrow from "./back-arrow.svg";
 
 export default function ObjectDetails({ isStaff, objectId, onClose }) {
   const [selectedWorkId, setSelectedWorkId] = useState(null);
   const [objectStatus, setObjectStatus] = useState(null);
-  const [activeTask, setActiveTask] = useState(null);
-  const [worksWithoutReviews, setWorksWithoutReviews] = useState([]);
   const [availableTasks, setAvailableTasks] = useState([]);
   const [currentTasks, setCurrentTasks] = useState([]);
-  const [workersInfo, setWorkersInfo] = useState({});
+  const [worksWithoutReviews, setWorksWithoutReviews] = useState([]);
   const [workHistory, setWorkHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,6 +23,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     name: '',
     description: ''
   });
+  const [fetchTrigger, setFetchTrigger] = useState(0); // Добавляем триггер для обновления данных
 
   const getAuthHeader = async () => {
     try {
@@ -39,60 +39,60 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     return () => document.body.classList.remove('modal-open');
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const authConfig = await getAuthHeader();
-        
-        // Загрузка статуса объекта
-        const statusResponse = await axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
+  const fetchData = async () => {
+    try {
+      const authConfig = await getAuthHeader();
+      
+      // Загрузка статуса объекта
+      const statusResponse = await axios.get(
+        `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
+        authConfig
+      );
+      setObjectStatus(statusResponse.data);
+
+      // Загрузка работ без отзывов для прораба
+      if (isStaff) {
+        const worksResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
           authConfig
         );
-        setObjectStatus(statusResponse.data);
-
-        // Загрузка работ без отзывов для прораба
-        if (isStaff) {
-          const worksResponse = await axios.get(
-            `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
-            authConfig
-          );
-          setWorksWithoutReviews(worksResponse.data);
-        }
-
-        // Загрузка истории работ
-        const historyResponse = await axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
-          authConfig
-        );
-        setWorkHistory(historyResponse.data);
-
-        // Загрузка задач
-        const tasksResponse = await axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
-          authConfig
-        );
-        
-        const current = tasksResponse.data.filter(work => work.start_time && !work.end_time);
-        setCurrentTasks(current);
-
-        const available = tasksResponse.data.filter(work => !work.start_time && !work.end_time);
-        setAvailableTasks(available);
-
-      } catch (error) {
-        console.error(error);
-        setError(error.response?.status || 500);
-      } finally {
-        setLoading(false);
+        setWorksWithoutReviews(worksResponse.data);
       }
-    };
 
+      // Загрузка истории работ
+      const historyResponse = await axios.get(
+        `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+        authConfig
+      );
+      setWorkHistory(historyResponse.data);
+
+      // Загрузка задач
+      const tasksResponse = await axios.get(
+        `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+        authConfig
+      );
+      
+      const current = tasksResponse.data.filter(work => work.start_time && !work.end_time);
+      setCurrentTasks(current);
+
+      const available = tasksResponse.data.filter(work => !work.start_time && !work.end_time);
+      setAvailableTasks(available);
+
+    } catch (error) {
+      console.error(error);
+      setError(error.response?.status || 500);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, [objectId, isStaff]);
+  }, [objectId, isStaff, fetchTrigger]); // Добавляем fetchTrigger в зависимости
 
   const handleCompleteTask = () => {
-    setActiveTask(null);
-    setAvailableTasks(prev => prev.filter(t => t.id !== activeTask?.id));
+    // Триггерим повторную загрузку данных
+    setFetchTrigger(prev => prev + 1);
   };
 
   const handleCreateTask = async () => {
@@ -114,6 +114,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
         name: '',
         description: ''
       });
+      setFetchTrigger(prev => prev + 1); // Обновляем данные после создания задачи
     } catch (error) {
       setError(error.response?.data?.message || error.message);
     }
@@ -140,13 +141,13 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
   return (
     <div className="object-container">
       <button className="close-button" onClick={onClose}>
-        ×
+        <img src={backArrow}></img>
       </button>
       
       {objectStatus && (
-        <div className="object-info" style={style1}>
+        <div className="object-info" style={currentTasks?.length > 0 ? {borderRadius: "20px"} : {gap: "10px"}}>
           <h2>{objectStatus?.object?.name || "Noname"}</h2>
-          <div style={{padding: "20px", paddingTop: "0px"}} >
+          <div style={{padding: "20px", paddingTop: "0px"}}>
             <p><b>Адрес:</b> {objectStatus?.object?.address || "Noinfo"}</p>
             <p><b>Статус:</b> {objectStatus.status}</p>
           </div>
