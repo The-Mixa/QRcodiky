@@ -132,6 +132,11 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     );
   }
 
+  var style1 = {gap: "10px"};
+  if (currentTasks?.length > 0){
+    style1 = {borderRadius: "20px"};
+  }
+
   return (
     <div className="object-container">
       <button className="close-button" onClick={onClose}>
@@ -139,7 +144,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       </button>
       
       {objectStatus && (
-        <div className="object-info">
+        <div className="object-info" style={style1}>
           <h2>{objectStatus?.object?.name || "Noname"}</h2>
           <div style={{padding: "20px", paddingTop: "0px"}} >
             <p><b>Адрес:</b> {objectStatus?.object?.address || "Noinfo"}</p>

@@ -5,9 +5,10 @@ form {
   margin-top: 50px;
   max-width: 80vw;
   background-color: #306BAC;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 15px;
+  border-radius: 30px;
   color: white;
+  
 }
 
 @media (min-width: 500px) {
@@ -19,9 +20,8 @@ form {
 
 form input {
   background-color: white;
-  border-radius: 5px;
+  border-radius: 15px;
   padding: 10px;
-  margin-top: 10px;
 }
 
 form button {
@@ -31,15 +31,30 @@ form button {
   margin-top: 10px;
 }
 
-.form-heading {
-  margin: auto;
-  width: fit-content;
+form textarea{
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 10px;
+}
+
+.form-comment{
+  color: black !important;
+  margin: 0 !important;
 }
 
 .form-link {
   width: calc(100% - 20px);
   text-align: center;
   text-decoration: dashed;
+}
+
+.form-actions button{
+  background-color: #90CBFE;
+  font-weight: 600;
+  border: 0;
+  border-radius: 15px;
+  padding: 15px;
+  margin-right: 10px;
 }
 
 .images img {
@@ -51,8 +66,13 @@ form button {
 body {
   font-family: 'Arial', sans-serif;
   background-color: #DBE9EE; /* Белый фон */
-  color: #3A3743; /* Темный текст */
+  color: black; /* Темный текст */
   overflow-x: hidden;
+}
+
+
+.work-name{
+  font-weight: 500;
 }
 
 .home-button {
@@ -122,7 +142,7 @@ body {
   color: #FFFFFF; /* Белый текст */
   padding: 10px 20px; /* Отступы */
   border: none; /* Убираем рамку */
-  border-radius: 10px; /* Закругление углов */
+  border-radius: 20px; /* Закругление углов */
   text-decoration: none; /* Убираем подчеркивание */
   min-width: 200px;
   font-size: 20px;
@@ -153,9 +173,7 @@ body {
 
 .camera-container {
   border-radius: 30px;;
-  margin: 15px;
   width: calc(100vw - 30px);
-  margin-top: 15vh;
   background-color: #DBE9EE;
 }
 .content-wrapper{
@@ -163,9 +181,10 @@ body {
 }
 
 .camera-container video, .camera-container img {
-  max-width: calc(100vw - 30px);
+  max-width: calc(80vw - 30px);
   max-height: calc(100vw - 30px);
-  border-radius: 30px;;
+  border-radius: 30px;
+  margin: auto;
 }
 
 .center-align {
@@ -353,7 +372,6 @@ body {
 }
 
 .work-image-form {
-  background-color: white;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -367,7 +385,15 @@ body {
 }
 
 .work-form {
-  margin-bottom: 32px;
+  background-color: #DBE9EE;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.image-form-top-info{
+  background-color: #C0D6DF;
 }
 
 .back-button {
@@ -398,9 +424,9 @@ body {
 
 .form-textarea {
   min-width: calc(100% - 30px);
-  padding: 12px;
+  padding: 15px;
   border: 2px solid #306BAC;
-  border-radius: 6px;
+  border-radius: 15px;
   margin-bottom: 16px;
   min-height: 100px;
   resize: vertical;
@@ -413,12 +439,14 @@ body {
 .file-input-label {
   display: flex;
   align-items: center;
+  color: black;
   gap: 12px;
 }
 
 .file-input {
   padding: 8px;
   border: 2px solid #306BAC;
+  background-color: #306BAC;
   border-radius: 6px;
   width: calc(100% - 20px);
 }
@@ -439,7 +467,7 @@ body {
 }
 
 .submit-button {
-  background-color: grey;
+  background-color: #90CBFE;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -665,8 +693,6 @@ body {
 }
 
 input {
-  margin: 10px 0;
-  padding: 12px;
   border: 2px solid #ddd;
   border-radius: 8px;
   box-sizing: border-box;
@@ -757,18 +783,17 @@ input {
   position: relative;
   flex: 1;
   overflow-y: auto;
+  margin-top: 150px;
+  margin-bottom: 110px;
 }
 
 .object-container {
   padding: 20px;
   min-height: calc(100vh - 300px);
-  padding-top: 100px;
-  padding-bottom: 100px;
 
 }
 
 .page-content{
-  padding-top: 160px;
   padding-left: 20px;
   padding-right: 20px;
   background-color: #DBE9EE;
@@ -776,7 +801,7 @@ input {
 
 .close-button {
   position: absolute;
-  top: 115px;
+  top: 40px;
   right: 10px;
   z-index: 100;
   background: #ff4444;
@@ -855,9 +880,16 @@ input {
 
 
 .object-info{
-  background-color: #C2E2FE;
+  background-color: #C0D6DF;
   border-radius: 30px;;
+}
 
+.form-heading{
+  color: black !important;
+  background-color: #C0D6DF;
+  border-radius: 20px;
+  margin: 0px !important;
+  padding: 20px !important;
 }
 
 .object-info h2{
@@ -908,13 +940,15 @@ input {
 .work-info-section{
   gap: 2px;
   padding: 10px;
+  background-color: #C0D6DF;
 
 }
 
 .object-name{
   text-align: right;
-  min-width: calc(70vw);
   font-size: 15px !important;
+  padding-right: 10px;
+  color: #7AC74F;
 }
 
 .arrow-icon {
@@ -946,7 +980,14 @@ input {
 .work-item.expanded .work-details-expanded {
   max-height: 1000px; /* Значение больше предполагаемой высоты контента */
   opacity: 1;
+  background-color: #C0D6DF;
 }
+
+.work-item.expanded{
+  background-color: #C0D6DF;
+}
+
+
 
 .work-details-content {
   transform: translateY(-10px);
@@ -959,6 +1000,15 @@ input {
 
 .work-item {
   transition: box-shadow 0.3s ease;
+}
+
+.work-item .arrow-container img{
+  rotate: 0deg;
+  transition: 0.5s;
+}
+
+.work-item.expanded .arrow-container img{
+  rotate: 90deg;
 }
 
 .work-details-expanded {
@@ -975,6 +1025,7 @@ input {
   max-height: 1500px; /* Максимальная возможная высота */
   opacity: 1;
 }
+
 
 .work-details-content {
   transform: translateY(-20px);
@@ -1011,8 +1062,20 @@ input {
   transform: translateY(0);
 }
 
+
+
+@keyframes open_{
+  from {
+    max-height: 0px ;
+  }
+
+  to {
+    max-height: 800px;
+  }
+}
+
 .work-details-expanded {
-  transition: all 0.4s ease-in-out !important;
+  animation: open_ 1s ease-in-out;
 }
 
 /* Добавьте в App.css */
@@ -1039,4 +1102,8 @@ input {
 .work-item.expanded .details-content {
   transform: translateY(0);
   opacity: 1;
+}
+
+.app-container{
+  background-color: #DBE9EE;
 }

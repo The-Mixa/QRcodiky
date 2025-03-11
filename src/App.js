@@ -34,7 +34,7 @@ function App() {
     setShowSignup(false);
     checkAuthStatus();
   };
-
+  
   const handleLogOut = () => {
     localStorage.removeItem("refresh_token");
     setShowLogin(true);

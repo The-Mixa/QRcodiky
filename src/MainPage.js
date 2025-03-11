@@ -60,7 +60,7 @@ export default function MainPage({ isStaff, onLogOut }) {
 
   return (
     <>
-      <header className="header">
+      <header className="header" onClick={() => setActiveBlock("camera")}>
         <img src={logo}></img>
         <h3>Yasmin</h3>
       </header>

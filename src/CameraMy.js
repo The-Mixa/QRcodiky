@@ -33,6 +33,11 @@ export default function CameraMy({ onObjectDetected }) {
 
   return (
     <div className="camera-container">
+
+      <h2 style={{textAlign: "center"}}>QR сканер</h2>
+      <br></br>
+
+      <center>
       <Webcam
         ref={webcamRef}
         audio={false}
@@ -40,6 +45,7 @@ export default function CameraMy({ onObjectDetected }) {
         videoConstraints={{ facingMode: "environment" }}
         className="camera-view"
       />
+      </center>
     </div>
   );
 }
