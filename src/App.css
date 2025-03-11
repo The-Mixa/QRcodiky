@@ -738,7 +738,7 @@ input {
   color: white;
   border: 0;
   border-radius: 20px;
-  padding: 10px;
+  padding: f;
   font-size: 16px;
   font-weight: 600;
 }
@@ -994,7 +994,7 @@ input {
 }
 
 .arrow-icon.expanded {
-  transform: rotate(90deg);
+  transform: rotate(0deg);
 }
 
 .arrow-icon svg {
