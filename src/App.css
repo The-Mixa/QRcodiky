@@ -1142,3 +1142,20 @@ input {
 .app-container{
   background-color: #DBE9EE;
 }
+
+
+.auth-form .form-heading{
+  padding: 5px !important;
+  text-align: center !important;
+  margin-bottom: 40px !important;
+}
+
+.auth-form input{
+  margin-bottom: 10px;
+}
+
+
+.light-blue{
+  background-color: #C0D6DF;
+  margin-top: 50px;
+}

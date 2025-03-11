@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { refresh } from './refresh';
+import "./App.css";
+
 
 const Login = ({ onSuccess, switchToSignup }) => {
   const [credentials, setCredentials] = useState({
@@ -40,8 +42,8 @@ const Login = ({ onSuccess, switchToSignup }) => {
 
   return (
     <div className='form-container'>
-      <form onSubmit={handleSubmit}>
-        <h1 className='form-heading'>Вход</h1>
+      <form onSubmit={handleSubmit} className='auth-form'>
+        <h3 className='form-heading'>Вход</h3>
         
         {error && <div className="form-error">{error}</div>}
         
@@ -59,7 +61,7 @@ const Login = ({ onSuccess, switchToSignup }) => {
           onChange={handleChange}
           required
         />
-        <button type="submit" className="link">
+        <button type="submit" className="link light-blue">
           Войти
         </button>
         

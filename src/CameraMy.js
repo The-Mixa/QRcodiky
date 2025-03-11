@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from "jsqr";
-import './CameraMy.css'; // Подключаем стили
 
 export default function CameraMy({ onObjectDetected }) {
   const webcamRef = useRef(null);
