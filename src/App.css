@@ -332,7 +332,7 @@ body {
 
 .comment-label {
   display: block;
-  color: white;
+  color: black;
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -347,6 +347,9 @@ body {
   text-align: center;
 }
 
+img.fullscreen-image{
+  min-width: 90vw;
+}
 
 
 .textarea-comment {

@@ -23,7 +23,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     name: '',
     description: ''
   });
-  const [fetchTrigger, setFetchTrigger] = useState(0); // Добавляем триггер для обновления данных
+  const [fetchTrigger, setFetchTrigger] = useState(0);
 
   const getAuthHeader = async () => {
     try {
@@ -43,14 +43,12 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     try {
       const authConfig = await getAuthHeader();
       
-      // Загрузка статуса объекта
       const statusResponse = await axios.get(
         `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
         authConfig
       );
       setObjectStatus(statusResponse.data);
 
-      // Загрузка работ без отзывов для прораба
       if (isStaff) {
         const worksResponse = await axios.get(
           `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
@@ -59,14 +57,12 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
         setWorksWithoutReviews(worksResponse.data);
       }
 
-      // Загрузка истории работ
       const historyResponse = await axios.get(
         `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
         authConfig
       );
       setWorkHistory(historyResponse.data);
 
-      // Загрузка задач
       const tasksResponse = await axios.get(
         `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
         authConfig
@@ -88,10 +84,9 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
 
   useEffect(() => {
     fetchData();
-  }, [objectId, isStaff, fetchTrigger]); // Добавляем fetchTrigger в зависимости
+  }, [objectId, isStaff, fetchTrigger]);
 
   const handleCompleteTask = () => {
-    // Триггерим повторную загрузку данных
     setFetchTrigger(prev => prev + 1);
   };
 
@@ -114,7 +109,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
         name: '',
         description: ''
       });
-      setFetchTrigger(prev => prev + 1); // Обновляем данные после создания задачи
+      setFetchTrigger(prev => prev + 1);
     } catch (error) {
       setError(error.response?.data?.message || error.message);
     }
@@ -133,15 +128,10 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     );
   }
 
-  var style1 = {gap: "10px"};
-  if (currentTasks?.length > 0){
-    style1 = {borderRadius: "20px"};
-  }
-
   return (
     <div className="object-container">
       <button className="close-button" onClick={onClose}>
-        <img src={backArrow}></img>
+        <img src={backArrow} alt="Назад"></img>
       </button>
       
       {objectStatus && (
@@ -158,7 +148,10 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
         <WorkDetails 
           workId={selectedWorkId}
           isStaff={isStaff}
-          onBack={() => setSelectedWorkId(null)}
+          onBack={() => {
+            setSelectedWorkId(null);
+            setFetchTrigger(prev => prev + 1);
+          }}
           setTitle={() => {}}
         />
       ) : (
@@ -168,7 +161,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
               {worksWithoutReviews.length > 0 ? (
                 <>
                   <h3>Работы на оценку</h3>
-                  <WorkListReview 
+                  <WorkListReview
                     works={worksWithoutReviews}
                     onWorkSelect={setSelectedWorkId}
                   />
@@ -239,8 +232,6 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
           )}
         </>
       )}
-
-      
     </div>
   );
 }

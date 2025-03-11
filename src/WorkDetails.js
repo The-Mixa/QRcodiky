@@ -1,11 +1,10 @@
-// WorkDetails.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import WorkImageForm from './WorkImageForm';
 import RatingComponent from './RatingComponent';
 import { refresh } from './refresh';
 import backArrow from "./back-arrow.svg";
-
+import ImageGallery from './ImageGalery';
 import './App.css';
 
 const WorkDetails = ({ workId, isStaff, setTitle, onBack }) => {
@@ -61,7 +60,7 @@ const WorkDetails = ({ workId, isStaff, setTitle, onBack }) => {
       );
       onBack();
     } catch (error) {
-      setError(error.status);
+      setError(error.response?.status || error.message);
     }
   };
 
@@ -80,41 +79,51 @@ const WorkDetails = ({ workId, isStaff, setTitle, onBack }) => {
     <div className="work-details-container">
       {isStaff ? (
         <div className="staff-review-section">
-                <button onClick={onBack} className='back-button'>
-                  <img src={backArrow}></img>
-                </button>
+          <button onClick={onBack} className='back-button'>
+            <img src={backArrow} alt="Назад"></img>
+          </button>
 
-          
           <div className='object-info' style={{ backgroundColor: "#6E9EB0", color: "white"}}>
             <h2>Оценка</h2>
-            <div style={{padding: "20px", color: "white !important"}}>
-          <p><b>Название работы: </b>{work.name}</p>
-          <p><b>Описание работы: </b>{work.description}</p>
-          <p><b>Выполнил:</b>{work?.user?.fullname || "Не указан"}</p>
-          <p className="comment-text"><span style={{color: "white"}}><b> Комментарий от работника:</b> {comment || "Без коментариев"}</span></p>
-
+            <div style={{padding: "20px", color: "white"}}>
+              <p><b>Название работы: </b>{work.name}</p>
+              <p><b>Описание работы: </b>{work.description}</p>
+              <p><b>Выполнил:</b> {work?.user?.fullname || "Не указан"}</p>
+              <p className="comment-text">
+                <b>Комментарий от работника:</b> {comment || "Без комментариев"}
+              </p>
+            </div>
           </div>
-        </div>
 
           {work.images.length > 0 && (
-            <div className="images">
+            <div className="work-images-grid">
               {work.images.map((image) => (
-                <img key={image.id} src={image.image} alt={`Work image ${image.id}`} />
+                <ImageGallery 
+                  key={image.id} 
+                  src={image.image} 
+                />
               ))}
             </div>
           )}
-          <br/><br/><br/>
-          <label className="comment-label"><b>Добавить комментарий к оценке:</b></label>
-          <textarea
-            className="textarea-comment"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <RatingComponent rating={rating} setRating={setRating} />
-          <button className="rate-button" onClick={handleRateWork}>
-            Оценить работу
-          </button>
-        
+
+          <div className="review-form">
+            <br></br>
+            <br></br>
+            <label className="comment-label">
+              <b>Добавить комментарий к оценке:</b>
+            </label>
+            <textarea
+              className="textarea-comment"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            
+            <RatingComponent rating={rating} setRating={setRating} />
+            
+            <button className="rate-button" onClick={handleRateWork}>
+              Оценить работу
+            </button>
+          </div>
         </div>
       ) : (
         <WorkImageForm 

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { refresh } from './refresh';
 import './App.css';
 import arrow from "./unwrap-green 1.svg";
+import ImageGallery from './ImageGalery';
 
 const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
   const [expandedWork, setExpandedWork] = useState(null);
@@ -77,11 +78,9 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
                   <strong>Фотографии работ:</strong>
                   <div className="work-images-grid">
                     {details.images.map(image => (
-                      <img 
+                      <ImageGallery
                         key={image.id} 
                         src={image.url} 
-                        alt="Фото работы" 
-                        className="work-image"
                       />
                     ))}
                   </div>
