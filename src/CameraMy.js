@@ -32,7 +32,6 @@ export default function CameraMy({ onObjectDetected }) {
       const canvas = document.createElement('canvas');
       const video = webcamRef.current.video;
       
-      // Используем реальные размеры видео
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       
@@ -46,8 +45,14 @@ export default function CameraMy({ onObjectDetected }) {
         });
 
         if (code?.data && onObjectDetected) {
-          const objectId = code.data.split('/').pop();
-          onObjectDetected(objectId);
+          // Обрабатываем URL с завершающим слешем
+          const cleanedUrl = code.data.replace(/\/+$/, ''); // Удаляем все слеши в конце
+          const parts = cleanedUrl.split('/');
+          const objectId = parts[parts.length - 1]; // Берем последнюю часть после последнего слеша
+          
+          if (objectId) {
+            onObjectDetected(objectId);
+          }
         }
       } catch (e) {
         console.error('Ошибка обработки QR-кода:', e);
