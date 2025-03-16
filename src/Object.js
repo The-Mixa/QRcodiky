@@ -49,14 +49,6 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       );
       setObjectStatus(statusResponse.data);
 
-      if (isStaff) {
-        const worksResponse = await axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
-          authConfig
-        );
-        setWorksWithoutReviews(worksResponse.data);
-      }
-
       const historyResponse = await axios.get(
         `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
         authConfig
@@ -73,6 +65,14 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
 
       const available = tasksResponse.data.filter(work => !work.start_time && !work.end_time);
       setAvailableTasks(available);
+
+      if (isStaff) {
+        const worksResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
+          authConfig
+        );
+        setWorksWithoutReviews(worksResponse.data);
+      }
 
     } catch (error) {
       console.error(error);
@@ -158,7 +158,46 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
         <>
           {isStaff ? (
             <div className="foreman-interface">
-              {worksWithoutReviews.length > 0 ? (
+              {/* Секция создания задачи */}
+              {availableTasks.length === 0 && (
+                <div className="create-task-section">
+                  {showCreateForm ? (
+                    <form className="work-form">
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Название задачи"
+                        value={newTaskData.name}
+                        onChange={(e) => setNewTaskData({...newTaskData, name: e.target.value})}
+                      />
+                      <textarea
+                        name="description"
+                        placeholder="Описание задачи"
+                        value={newTaskData.description}
+                        onChange={(e) => setNewTaskData({...newTaskData, description: e.target.value})}
+                      />
+                      <div className="form-actions">
+                        <button type="button" onClick={handleCreateTask}>
+                          Создать
+                        </button>
+                        <button type="button" onClick={() => setShowCreateForm(false)}>
+                          Отмена
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <button 
+                      className="link create-task-button"
+                      onClick={() => setShowCreateForm(true)}
+                    >
+                      Создать новую задачу
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Список работ на оценку */}
+              {worksWithoutReviews.length > 0 && (
                 <>
                   <h3>Работы на оценку</h3>
                   <WorkListReview
@@ -166,10 +205,6 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
                     onWorkSelect={setSelectedWorkId}
                   />
                 </>
-              ) : (
-                <div className="empty-state">
-                  <p>Нет работ на оценку</p>
-                </div>
               )}
             </div>
           ) : (
@@ -192,38 +227,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
                     </>
                   ) : (
                     <div className="no-tasks">
-                      {showCreateForm ? (
-                        <form className="work-form">
-                          <input
-                            type="text"
-                            name="name"
-                            placeholder="Название задачи"
-                            value={newTaskData.name}
-                            onChange={(e) => setNewTaskData({...newTaskData, name: e.target.value})}
-                          />
-                          <textarea
-                            name="description"
-                            placeholder="Описание задачи"
-                            value={newTaskData.description}
-                            onChange={(e) => setNewTaskData({...newTaskData, description: e.target.value})}
-                          />
-                          <div className="form-actions">
-                            <button type="button" onClick={handleCreateTask}>
-                              Создать
-                            </button>
-                            <button type="button" onClick={() => setShowCreateForm(false)}>
-                              Отмена
-                            </button>
-                          </div>
-                        </form>
-                      ) : (
-                        <button 
-                          className="link"
-                          onClick={() => setShowCreateForm(true)}
-                        >
-                          Создать новую задачу
-                        </button>
-                      )}
+                      <p>Нет доступных задач</p>
                     </div>
                   )}
                 </div>
