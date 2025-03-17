@@ -135,6 +135,10 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       </button>
       
       {objectStatus && (
+        <>
+        <button onClick={onClose} style={{position: "absolute", top: "10px", left: "10px", backgroundColor: "rgba(0, 0, 0, 0)", border: "0px"}}>
+          <img src={backArrow}></img>
+        </button>
         <div className="object-info" style={currentTasks?.length > 0 ? {borderRadius: "20px"} : {gap: "10px"}}>
           <h2>{objectStatus?.object?.name || "Noname"}</h2>
           <div style={{padding: "20px", paddingTop: "0px"}}>
@@ -142,6 +146,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
             <p><b>Статус:</b> {objectStatus.status}</p>
           </div>
         </div>
+        </>
       )}
 
       {selectedWorkId ? (
