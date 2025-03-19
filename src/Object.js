@@ -30,7 +30,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       const accessToken = await refresh(localStorage.getItem("refresh_token"));
       return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
-      throw new Error('Ошибка авторизации');
+      setError(403);
     }
   };
 

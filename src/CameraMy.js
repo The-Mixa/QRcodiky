@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from "jsqr";
 
@@ -6,12 +6,17 @@ export default function CameraMy({ onObjectDetected }) {
   const webcamRef = useRef(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [error, setError] = useState(null);
+  const [isScanning, setIsScanning] = useState(true); // Новое состояние для контроля сканирования
 
   // Проверка доступа к камере
   useEffect(() => {
     const checkCameraAccess = async () => {
       try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Важно освобождать предыдущие потоки
+        if (webcamRef.current?.stream) {
+          webcamRef.current.stream.getTracks().forEach(track => track.stop());
+        }
         setHasCameraPermission(true);
       } catch (err) {
         setHasCameraPermission(false);
@@ -24,14 +29,23 @@ export default function CameraMy({ onObjectDetected }) {
 
   // Логика сканирования QR-кода
   useEffect(() => {
-    if (!hasCameraPermission) return;
+    if (!hasCameraPermission || !isScanning) return;
 
-    const interval = setInterval(() => {
-      if (!webcamRef.current?.video?.readyState) return;
+    let animationFrameId;
+    const scanFrame = () => {
+      if (!webcamRef.current?.video) {
+        animationFrameId = requestAnimationFrame(scanFrame);
+        return;
+      }
+
+      const video = webcamRef.current.video;
+      // Проверка готовности видео
+      if (video.readyState !== HTMLMediaElement.HAVE_ENOUGH_DATA) {
+        animationFrameId = requestAnimationFrame(scanFrame);
+        return;
+      }
 
       const canvas = document.createElement('canvas');
-      const video = webcamRef.current.video;
-      
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       
@@ -45,22 +59,21 @@ export default function CameraMy({ onObjectDetected }) {
         });
 
         if (code?.data && onObjectDetected) {
-          // Обрабатываем URL с завершающим слешем
-          const cleanedUrl = code.data.replace(/\/+$/, ''); // Удаляем все слеши в конце
-          const parts = cleanedUrl.split('/');
-          const objectId = parts[parts.length - 1]; // Берем последнюю часть после последнего слеша
-          
-          if (objectId) {
-            onObjectDetected(objectId);
-          }
+          // Останавливаем сканирование после успеха
+          setIsScanning(false);
+          const cleanedUrl = code.data.replace(/\/+$/, '');
+          const objectId = cleanedUrl.split('/').pop();
+          onObjectDetected(objectId);
         }
       } catch (e) {
         console.error('Ошибка обработки QR-кода:', e);
       }
-    }, 300);
+      animationFrameId = requestAnimationFrame(scanFrame);
+    };
 
-    return () => clearInterval(interval);
-  }, [hasCameraPermission, onObjectDetected]);
+    scanFrame();
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [hasCameraPermission, onObjectDetected, isScanning]); // Добавлена зависимость от isScanning
 
   // Состояния загрузки
   if (hasCameraPermission === null) {
