@@ -16,6 +16,10 @@ function App() {
     if (registered()) checkAuthStatus();
   }, []);
 
+  useEffect(() => {
+    document.title = 'Yasmin';
+  }, []);
+
   const checkAuthStatus = async () => {
     try {
       const accessToken = await refresh(localStorage.getItem("refresh_token"));
