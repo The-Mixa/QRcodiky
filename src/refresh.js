@@ -55,10 +55,3 @@ export function registered() {
   const refreshToken = localStorage.getItem("refresh_token");
   return !!refreshToken && refreshToken !== "undefined" && refreshToken !== "null";
 }
-
-
-export function registered(){
-  if (localStorage.getItem("refresh_token") !== "undefined" && localStorage.getItem("refresh_token") !== 'null' && localStorage.getItem("refresh_token") !== null)
-    return true;
-  return false;
-}
