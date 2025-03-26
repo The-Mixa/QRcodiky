@@ -90,6 +90,10 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     setFetchTrigger(prev => prev + 1);
   };
 
+  const handleWorkStart = () => {
+    setFetchTrigger(prev => prev + 1);
+  };
+
   const handleCreateTask = async () => {
     try {
       const authConfig = await getAuthHeader();
@@ -227,6 +231,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
                       <WorkList 
                         works={availableTasks}
                         onWorkSelect={setSelectedWorkId}
+                        onWorkStart={handleWorkStart} // Добавляем коллбэк
                         color={"red"}
                       />
                     </>
