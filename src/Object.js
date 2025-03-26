@@ -56,7 +56,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       setWorkHistory(historyResponse.data);
 
       const tasksResponse = await axios.get(
-        `${process.env.REACT_APP_HOST}/api/v1/object//${objectId}/`,
+        `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`,
         authConfig
       );
       
@@ -87,6 +87,10 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
   }, [objectId, isStaff, fetchTrigger]);
 
   const handleCompleteTask = () => {
+    setFetchTrigger(prev => prev + 1);
+  };
+
+  const handleWorkStart = () => {
     setFetchTrigger(prev => prev + 1);
   };
 
@@ -227,6 +231,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
                       <WorkList 
                         works={availableTasks}
                         onWorkSelect={setSelectedWorkId}
+                        onWorkStart={handleWorkStart} // Добавляем коллбэк
                         color={"red"}
                       />
                     </>

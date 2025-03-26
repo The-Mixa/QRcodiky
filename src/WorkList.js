@@ -20,6 +20,27 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
     }
   };
 
+  const handleStartWork = async (workId) => {
+    try {
+      const authConfig = await getAuthHeader();
+      await axios.patch(
+        `${process.env.REACT_APP_HOST}/api/v1/start/${workId}/`,
+        {},
+        authConfig
+      );
+      
+      // Обновляем локальные данные
+      const updatedDetails = { ...workDetails[workId], start_time: new Date().toISOString() };
+      setWorkDetails(prev => ({ ...prev, [workId]: updatedDetails }));
+      
+      // Уведомляем родительский компонент
+      if(onWorkStart) onWorkStart();
+    } catch (error) {
+      console.error('Error starting work:', error);
+      setError('Ошибка при старте работы');
+    }
+  };
+
   const handleWorkClick = async (workId) => {
     try {
       setError(null);
@@ -59,7 +80,18 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
       <div className="work-details-content">
         <div className="work-info-section">
           <p><strong>Адрес:</strong> {details.object?.address || 'Не указан'}</p>
+          {details.start_time &&
           <p><strong>Дата начала:</strong> {details?.start_time || "Не указано"}</p>
+          }
+          {!details.start_time && !isStaff &&
+            <button 
+              className="start-work-button"
+              onClick={() => handleStartWork(workId)}
+            >
+              Начать работу
+            </button>
+          
+          }
           {details.end_time && 
             <p><strong>Дата завершения:</strong> {details?.end_time || "Не указано"}</p>}
           <p><strong>Описание:</strong> {details.description || 'Нет описания'}</p>
