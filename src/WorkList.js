@@ -59,9 +59,9 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
       <div className="work-details-content">
         <div className="work-info-section">
           <p><strong>Адрес:</strong> {details.object?.address || 'Не указан'}</p>
-          <p><strong>Дата начала:</strong> {new Date(details.start_time).toLocaleDateString()}</p>
+          <p><strong>Дата начала:</strong> {details?.start_time || "Не указано"}</p>
           {details.end_time && 
-            <p><strong>Дата завершения:</strong> {new Date(details.end_time).toLocaleDateString()}</p>}
+            <p><strong>Дата завершения:</strong> {details?.end_time || "Не указано"}</p>}
           <p><strong>Описание:</strong> {details.description || 'Нет описания'}</p>
           
           {details.review && (
