@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { refresh } from './refresh';
 import axios from "axios";
 import './App.css';
+import ImageGallery from "./ImageGalery.js";
 
 const WorkImageForm = ({ workId, setTitle, onComplete }) => {
     const [description, setDescription] = useState("");
@@ -46,7 +47,7 @@ const WorkImageForm = ({ workId, setTitle, onComplete }) => {
                 );
                 setImages(imagesResponse.data.map(img => ({
                     ...img,
-                    preview: `${process.env.REACT_APP_HOST}${img.image}`
+                    preview: img.image
                 })));
             } catch (error) {
                 setError(error.message);
@@ -139,18 +140,13 @@ const WorkImageForm = ({ workId, setTitle, onComplete }) => {
                 <br />
 
                 <div className="file-input-container">
-                    <div className="work-image-grid">
-                        {images.map(image => (
-                            <div 
-                                key={image.id} 
-                                className="thumbnail"
-                                onClick={() => setSelectedImage(image.preview)}
-                            >
-                                <img 
-                                    src={image.preview} 
-                                    alt="thumbnail" 
-                                    className="thumbnail-image"
-                                />
+                    <div className="work-images-grid">
+	    		{images.map(image => (
+			    <div key={image.id}>	
+        	                <ImageGallery 
+                	  	    key={image.id} 
+                  		    src={image.preview} 
+                		/>           
                                 {image.isUploading && (
                                     <div className="upload-status">Загрузка...</div>
                                 )}
