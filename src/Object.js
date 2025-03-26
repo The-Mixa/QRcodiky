@@ -56,7 +56,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       setWorkHistory(historyResponse.data);
 
       const tasksResponse = await axios.get(
-        `${process.env.REACT_APP_HOST}/api/v1/object//${objectId}/`,
+        `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`,
         authConfig
       );
       
