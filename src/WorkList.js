@@ -5,7 +5,7 @@ import './App.css';
 import arrow from "./unwrap-green 1.svg";
 import ImageGallery from './ImageGalery';
 
-const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
+const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart}) => {
   const [expandedWork, setExpandedWork] = useState(null);
   const [workDetails, setWorkDetails] = useState({});
   const [loadingDetails, setLoadingDetails] = useState(false);

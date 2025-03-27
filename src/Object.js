@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import WorkList from './WorkList';
 import WorkListReview from './WorkListReview';
@@ -9,6 +9,7 @@ import "./App.css";
 import backArrow from "./back-arrow.svg";
 
 export default function ObjectDetails({ isStaff, objectId, onClose }) {
+  // Состояния компонента
   const [selectedWorkId, setSelectedWorkId] = useState(null);
   const [objectStatus, setObjectStatus] = useState(null);
   const [availableTasks, setAvailableTasks] = useState([]);
@@ -25,40 +26,82 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
   });
   const [fetchTrigger, setFetchTrigger] = useState(0);
 
+  // Рефы для управления жизненным циклом
+  const isMounted = useRef(true);
+  const abortControllerRef = useRef(new AbortController());
+
+  // Эффект для управления классом body
+  useEffect(() => {
+    document.body.classList.add('modal-open');
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, []);
+
+  // Эффект очистки при размонтировании
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+      abortControllerRef.current.abort();
+    };
+  }, []);
+
+  // Функция получения заголовков авторизации
   const getAuthHeader = async () => {
     try {
       const accessToken = await refresh(localStorage.getItem("refresh_token"));
-      return { headers: { Authorization: `Bearer ${accessToken}` } };
+      return { 
+        headers: { Authorization: `Bearer ${accessToken}` },
+        signal: abortControllerRef.current.signal
+      };
     } catch (error) {
-      setError(403);
+      if (isMounted.current) setError(403);
     }
   };
 
-  useEffect(() => {
-    document.body.classList.add('modal-open');
-    return () => document.body.classList.remove('modal-open');
-  }, []);
-
+  // Основная функция загрузки данных
   const fetchData = async () => {
+    abortControllerRef.current.abort();
+    abortControllerRef.current = new AbortController();
+    
     try {
       const authConfig = await getAuthHeader();
       
-      const statusResponse = await axios.get(
-        `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
-        authConfig
-      );
+      const requests = [
+        axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
+          authConfig
+        ),
+        axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+          authConfig
+        ),
+        axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`,
+          authConfig
+        )
+      ];
+
+      if (isStaff) {
+        requests.push(
+          axios.get(
+            `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
+            authConfig
+          )
+        );
+      }
+
+      const [
+        statusResponse,
+        historyResponse,
+        tasksResponse,
+        worksResponse
+      ] = await Promise.all(requests);
+
+      if (!isMounted.current) return;
+
       setObjectStatus(statusResponse.data);
-
-      const historyResponse = await axios.get(
-        `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
-        authConfig
-      );
       setWorkHistory(historyResponse.data);
-
-      const tasksResponse = await axios.get(
-        `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`,
-        authConfig
-      );
       
       const current = tasksResponse.data.filter(work => work.start_time && !work.end_time);
       setCurrentTasks(current);
@@ -67,25 +110,29 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       setAvailableTasks(available);
 
       if (isStaff) {
-        const worksResponse = await axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
-          authConfig
-        );
-        setWorksWithoutReviews(worksResponse.data);
+        setWorksWithoutReviews(worksResponse?.data || []);
       }
 
     } catch (error) {
-      console.error(error);
-      setError(error.response?.status || 500);
+      if (axios.isCancel(error)) {
+        console.log('Request canceled:', error.message);
+      } else if (isMounted.current) {
+        console.error(error);
+        setError(error.response?.status || 500);
+      }
     } finally {
-      setLoading(false);
+      if (isMounted.current) setLoading(false);
     }
   };
 
+  // Эффект для вызова загрузки данных
   useEffect(() => {
-    fetchData();
+    if (isMounted.current) {
+      fetchData();
+    }
   }, [objectId, isStaff, fetchTrigger]);
 
+  // Обработчики событий
   const handleCompleteTask = () => {
     setFetchTrigger(prev => prev + 1);
   };
