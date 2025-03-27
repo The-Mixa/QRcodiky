@@ -60,72 +60,77 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
   };
 
   // Основная функция загрузки данных
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
+    abortControllerRef.current.abort();
+    abortControllerRef.current = new AbortController();
+    
     try {
-      // Создаём новый контроллер для каждого запроса
-      const controller = new AbortController();
-      const authConfig = await getAuthHeader(controller.signal);
-  
-      // Проверка актуальности компонента
-      if (!isMounted.current) return;
-  
-      setLoading(true);
-      setError(null);
-  
-      // Параллельные запросы с одним контроллером
-      const [statusResponse, historyResponse, tasksResponse] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`, authConfig),
-        axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`, authConfig),
-        axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`, authConfig),
-        ...(isStaff ? [
-          axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`, authConfig)
-        ] : [])
-      ]);
-  
-      // Обработка данных только если компонент смонтирован
-      if (isMounted.current) {
-        setObjectStatus(statusResponse.data);
-        setWorkHistory(historyResponse.data);
-        
-        const currentTasks = tasksResponse.data.filter(w => w.start_time && !w.end_time);
-        const availableTasks = tasksResponse.data.filter(w => !w.start_time && !w.end_time);
-        
-        setCurrentTasks(currentTasks);
-        setAvailableTasks(availableTasks);
-  
-        if (isStaff && tasksResponse.length > 3) {
-          setWorksWithoutReviews(tasksResponse[3].data);
-        }
+      const authConfig = await getAuthHeader();
+      
+      const requests = [
+        axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
+          authConfig
+        ),
+        axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+          authConfig
+        ),
+        axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`,
+          authConfig
+        )
+      ];
+
+      if (isStaff) {
+        requests.push(
+          axios.get(
+            `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
+            authConfig
+          )
+        );
       }
-  
+
+      const [
+        statusResponse,
+        historyResponse,
+        tasksResponse,
+        worksResponse
+      ] = await Promise.all(requests);
+
+      if (!isMounted.current) return;
+
+      setObjectStatus(statusResponse.data);
+      setWorkHistory(historyResponse.data);
+      
+      const current = tasksResponse.data.filter(work => work.start_time && !work.end_time);
+      setCurrentTasks(current);
+
+      const available = tasksResponse.data.filter(work => !work.start_time && !work.end_time);
+      setAvailableTasks(available);
+
+      if (isStaff) {
+        setWorksWithoutReviews(worksResponse?.data || []);
+      }
+
     } catch (error) {
       if (axios.isCancel(error)) {
-        console.log('Fetch canceled:', error.message);
+        console.log('Request canceled:', error.message);
       } else if (isMounted.current) {
-        console.error('Fetch error:', error);
+        console.error(error);
         setError(error.response?.status || 500);
       }
     } finally {
       if (isMounted.current) setLoading(false);
     }
-  }, [objectId, isStaff]); // Правильные зависимости
+  };
 
   // Эффект для вызова загрузки данных
   useEffect(() => {
-    const controller = new AbortController();
-    isMounted.current = true;
-  
-    const init = async () => {
-      await fetchData();
-    };
-  
-    init();
-  
-    return () => {
-      isMounted.current = false;
-      controller.abort();
-    };
-  }, [fetchData]); 
+    if (isMounted.current) {
+      fetchData();
+    }
+  }, [objectId, isStaff, fetchTrigger]);
 
   // Обработчики событий
   const handleCompleteTask = () => {
@@ -136,12 +141,9 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     setFetchTrigger(prev => prev + 1);
   };
 
-  const handleCreateTask = useCallback(async () => {
-    const controller = new AbortController();
-    
+  const handleCreateTask = async () => {
     try {
-      const authConfig = await getAuthHeader(controller.signal);
-      
+      const authConfig = await getAuthHeader();
       const response = await axios.post(
         `${process.env.REACT_APP_HOST}/api/v1/start/`,
         {
@@ -151,20 +153,18 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
         },
         authConfig
       );
-  
-      if (isMounted.current) {
-        setAvailableTasks(prev => [...prev, response.data]);
-        setShowCreateForm(false);
-        setNewTaskData({ object_id: objectId, name: '', description: '' });
-        setFetchTrigger(prev => prev + 1);
-      }
-  
+      setAvailableTasks(prev => [...prev, response.data]);
+      setShowCreateForm(false);
+      setNewTaskData({
+        object_id: objectId,
+        name: '',
+        description: ''
+      });
+      setFetchTrigger(prev => prev + 1);
     } catch (error) {
-      if (!axios.isCancel(error) && isMounted.current) {
-        setError(error.response?.data?.message || error.message);
-      }
+      setError(error.response?.data?.message || error.message);
     }
-  }, [objectId, newTaskData.name, newTaskData.description]);
+  };
 
   if (loading) return <div className="loading">Загрузка данных...</div>;
 
@@ -265,7 +265,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
             </div>
           ) : (
             <div className="worker-interface">
-              {currentTasks?.length > 0 ? (
+              {currentTasks.length > 0 ? (
                 <WorkImageForm 
                   workId={currentTasks[0].id}
                   onComplete={handleCompleteTask}
