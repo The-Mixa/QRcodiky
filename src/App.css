@@ -1233,3 +1233,14 @@ input {
  .upload-error{
 	 color: black;
 }
+
+
+.start-work-button{
+   background-color: #306BAC;
+   border: 0; 
+   border-radius: 15px;
+   width: 100%;
+   font-weight: 500;
+   color: white;
+   padding: 15px; 
+}

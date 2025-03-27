@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
+          
 import axios from 'axios';
 import { refresh } from './refresh';
 import './App.css';
 import arrow from "./unwrap-green 1.svg";
 import ImageGallery from './ImageGalery';
 
-const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
+const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart }) => {
   const [expandedWork, setExpandedWork] = useState(null);
   const [workDetails, setWorkDetails] = useState({});
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [error, setError] = useState(null);
-
+console.log(works);
   const getAuthHeader = async () => {
     try {
       const accessToken = await refresh(localStorage.getItem("refresh_token"));
@@ -23,9 +24,9 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
   const handleStartWork = async (workId) => {
     try {
       const authConfig = await getAuthHeader();
-      await axios.patch(
-        `${process.env.REACT_APP_HOST}/api/v1/start/${workId}/`,
-        {},
+      await axios.post(
+        `${process.env.REACT_APP_HOST}/api/v1/free-work/start/`,
+        {"work_id": workId},
         authConfig
       );
       
@@ -83,6 +84,7 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
           {details.start_time &&
           <p><strong>Дата начала:</strong> {details?.start_time || "Не указано"}</p>
           }
+          <p><strong>Описание:</strong> {details.description || 'Нет описания'}</p>
           {!details.start_time && !isStaff &&
             <button 
               className="start-work-button"
@@ -91,11 +93,9 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50' }) => {
               Начать работу
             </button>
           
-          }
+	  } 
           {details.end_time && 
             <p><strong>Дата завершения:</strong> {details?.end_time || "Не указано"}</p>}
-          <p><strong>Описание:</strong> {details.description || 'Нет описания'}</p>
-          
           {details.review && (
             <>
               <p><strong>Комментарий прораба:</strong> {details.review.comment || 'Без комментария'}</p>
