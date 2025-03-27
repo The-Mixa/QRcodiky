@@ -60,70 +60,55 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
   };
 
   // Основная функция загрузки данных
-  const fetchData = async () => {
-    abortControllerRef.current.abort();
-    abortControllerRef.current = new AbortController();
-    
-    try {
-      const authConfig = await getAuthHeader();
-      
-      const requests = [
-        axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
-          authConfig
-        ),
-        axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
-          authConfig
-        ),
-        axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`,
-          authConfig
-        )
-      ];
+  const fetchData = useCallback(async () => {
+  try {
+    // Создаём новый контроллер для каждого запроса
+    const controller = new AbortController();
+    const authConfig = await getAuthHeader(controller.signal);
 
-      if (isStaff) {
-        requests.push(
-          axios.get(
-            `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
-            authConfig
-          )
-        );
-      }
+    // Проверка актуальности компонента
+    if (!isMounted.current) return;
 
-      const [
-        statusResponse,
-        historyResponse,
-        tasksResponse,
-        worksResponse
-      ] = await Promise.all(requests);
+    setLoading(true);
+    setError(null);
 
-      if (!isMounted.current) return;
+    // Параллельные запросы с одним контроллером
+    const [statusResponse, historyResponse, tasksResponse] = await Promise.all([
+      axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`, authConfig),
+      axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`, authConfig),
+      axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`, authConfig),
+      ...(isStaff ? [
+        axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`, authConfig)
+      ] : [])
+    ]);
 
+    // Обработка данных только если компонент смонтирован
+    if (isMounted.current) {
       setObjectStatus(statusResponse.data);
       setWorkHistory(historyResponse.data);
       
-      const current = tasksResponse.data.filter(work => work.start_time && !work.end_time);
-      setCurrentTasks(current);
+      const currentTasks = tasksResponse.data.filter(w => w.start_time && !w.end_time);
+      const availableTasks = tasksResponse.data.filter(w => !w.start_time && !w.end_time);
+      
+      setCurrentTasks(currentTasks);
+      setAvailableTasks(availableTasks);
 
-      const available = tasksResponse.data.filter(work => !work.start_time && !work.end_time);
-      setAvailableTasks(available);
-
-      if (isStaff) {
-        setWorksWithoutReviews(worksResponse?.data || []);
+      if (isStaff && tasksResponse.length > 3) {
+        setWorksWithoutReviews(tasksResponse[3].data);
       }
-
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log('Request canceled:', error.message);
-      } else if (isMounted.current) {
-        console.error(error);
-        setError(error.response?.status || 500);
-      }
-    } finally {
-      if (isMounted.current) setLoading(false);
     }
-  };
+
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      console.log('Fetch canceled:', error.message);
+    } else if (isMounted.current) {
+      console.error('Fetch error:', error);
+      setError(error.response?.status || 500);
+    }
+  } finally {
+    if (isMounted.current) setLoading(false);
+  }
+}, [objectId, isStaff]); // Правильные зависимости
 
   // Эффект для вызова загрузки данных
   useEffect(() => {
