@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import WorkList from './WorkList';
 import WorkListReview from './WorkListReview';
@@ -9,7 +9,6 @@ import "./App.css";
 import backArrow from "./back-arrow.svg";
 
 export default function ObjectDetails({ isStaff, objectId, onClose }) {
-  // Состояния компонента
   const [selectedWorkId, setSelectedWorkId] = useState(null);
   const [objectStatus, setObjectStatus] = useState(null);
   const [availableTasks, setAvailableTasks] = useState([]);
@@ -26,98 +25,70 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
   });
   const [fetchTrigger, setFetchTrigger] = useState(0);
 
-  // Рефы для управления жизненным циклом
-  const isMounted = useRef(true);
-  const abortControllerRef = useRef(new AbortController());
-
-  // Эффект для управления классом body
-  useEffect(() => {
-    document.body.classList.add('modal-open');
-    return () => {
-      document.body.classList.remove('modal-open');
-    };
-  }, []);
-
-  // Эффект очистки при размонтировании
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-      abortControllerRef.current.abort();
-    };
-  }, []);
-
-  // Функция получения заголовков авторизации
   const getAuthHeader = async () => {
     try {
       const accessToken = await refresh(localStorage.getItem("refresh_token"));
-      return { 
-        headers: { Authorization: `Bearer ${accessToken}` },
-        signal: abortControllerRef.current.signal
-      };
+      return { headers: { Authorization: `Bearer ${accessToken}` } };
     } catch (error) {
-      if (isMounted.current) setError(403);
+      setError(403);
     }
   };
 
-  // Основная функция загрузки данных
-  const fetchData = useCallback(async () => {
-  try {
-    // Создаём новый контроллер для каждого запроса
-    const controller = new AbortController();
-    const authConfig = await getAuthHeader(controller.signal);
-
-    // Проверка актуальности компонента
-    if (!isMounted.current) return;
-
-    setLoading(true);
-    setError(null);
-
-    // Параллельные запросы с одним контроллером
-    const [statusResponse, historyResponse, tasksResponse] = await Promise.all([
-      axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`, authConfig),
-      axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`, authConfig),
-      axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`, authConfig),
-      ...(isStaff ? [
-        axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`, authConfig)
-      ] : [])
-    ]);
-
-    // Обработка данных только если компонент смонтирован
-    if (isMounted.current) {
-      setObjectStatus(statusResponse.data);
-      setWorkHistory(historyResponse.data);
-      
-      const currentTasks = tasksResponse.data.filter(w => w.start_time && !w.end_time);
-      const availableTasks = tasksResponse.data.filter(w => !w.start_time && !w.end_time);
-      
-      setCurrentTasks(currentTasks);
-      setAvailableTasks(availableTasks);
-
-      if (isStaff && tasksResponse.length > 3) {
-        setWorksWithoutReviews(tasksResponse[3].data);
-      }
-    }
-
-  } catch (error) {
-    if (axios.isCancel(error)) {
-      console.log('Fetch canceled:', error.message);
-    } else if (isMounted.current) {
-      console.error('Fetch error:', error);
-      setError(error.response?.status || 500);
-    }
-  } finally {
-    if (isMounted.current) setLoading(false);
-  }
-}, [objectId, isStaff]); // Правильные зависимости
-
-  // Эффект для вызова загрузки данных
   useEffect(() => {
-    if (isMounted.current) {
-      fetchData();
+    document.body.classList.add('modal-open');
+    return () => document.body.classList.remove('modal-open');
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const authConfig = await getAuthHeader();
+      
+      const statusResponse = await axios.get(
+        `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
+        authConfig
+      );
+      setObjectStatus(statusResponse.data);
+      if (objectStatus.work){
+        availableTasks.push(objectStatus.work);
+      }
+
+      const historyResponse = await axios.get(
+        `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
+        authConfig
+      );
+      setWorkHistory(historyResponse.data);
+
+      const tasksResponse = await axios.get(
+        `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`,
+        authConfig
+      );
+      
+      const current = tasksResponse.data.filter(work => work.start_time && !work.end_time);
+      setCurrentTasks(current);
+
+      const available = tasksResponse.data.filter(work => !work.start_time && !work.end_time);
+      setAvailableTasks(available);
+
+      if (isStaff) {
+        const worksResponse = await axios.get(
+          `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
+          authConfig
+        );
+        setWorksWithoutReviews(worksResponse.data);
+      }
+
+    } catch (error) {
+      console.error(error);
+      setError(error.response?.status || 500);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [objectId, isStaff, fetchTrigger]);
 
-  // Обработчики событий
   const handleCompleteTask = () => {
     setFetchTrigger(prev => prev + 1);
   };
