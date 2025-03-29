@@ -59,7 +59,7 @@ const WorkListReview = ({ works, isStaff, onWorkSelect, canMakeAction = true }) 
       <div className="work-details-content">
         <div className="work-info-section">
           <p><strong>Работник:</strong> {details.user?.fullname || 'Не указан'}</p>
-          <p><strong>Дата выполнения:</strong> {new Date(details.end_time).toLocaleDateString()}</p>
+          <p><strong>Дата выполнения:</strong> {details.end_time.substring(0, 10) || "Не указана"}</p>
           <p><strong>Комментарий работника:</strong> {details.comment || 'Нет комментария'}</p>
           
           <button 
