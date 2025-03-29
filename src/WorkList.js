@@ -29,7 +29,6 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart
         authConfig
       );
       
-      // Обновляем локальные данные
       const updatedDetails = { 
         ...workDetails[workId], 
         start_time: new Date().toLocaleDateString('ru-RU', {
@@ -88,7 +87,7 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart
         <div className="work-info-section">
           <p><strong>Адрес:</strong> {details.object?.address || 'Не указан'}</p>
           {details.start_time &&
-          <p><strong>Дата начала:</strong> {details?.start_time || "Не указано"}</p>
+          <p><strong>Дата начала:</strong> {details?.start_time.substring(0, 10) || "Не указано"}</p>
           }
           {!details.start_time && !isStaff && canMakeAction &&
             <button 
@@ -100,7 +99,7 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart
           
           }
           {details.end_time && 
-            <p><strong>Дата завершения:</strong> {details?.end_time || "Не указано"}</p>}
+            <p><strong>Дата завершения:</strong> {details?.end_time.substring(0, 10) || "Не указано"}</p>}
           <p><strong>Описание:</strong> {details.description || 'Нет описания'}</p>
           
           {details.review && (
