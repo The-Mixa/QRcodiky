@@ -70,7 +70,7 @@ export default function TodoPage({ isStaff }) {
         <h2>Все задачи</h2>
         <WorkList 
           canMakeAction={false}
-          works={tasks.filter(work => !work.end_time && )}
+          works={tasks.filter(work => !work.end_time)}
           onWorkSelect={(id) => {/* Обработка выбора */}}
           color="red
           " 
