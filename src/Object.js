@@ -126,12 +126,20 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
 
   if (loading) return <div className="loading">Загрузка данных...</div>;
 
-  if (error || objectStatus?.status === "busy") {
+  if (error) {
     return (
       <div className="error-container">
         {error === 404 && <p>Объект не найден</p>}
         {error === 403 && <p>Доступ запрещен</p>}
-        {(error === 400 || objectStatus?.status === "busy") && <p>Вы работаете на другом объекте</p>}
+        <button className="link" onClick={onClose}>Назад к камере</button>
+      </div>
+    );
+  }
+
+  if (objectStatus?.status === "busy") {
+    return (
+      <div className="error-container">
+        <p>Вы работаете на другом объекте</p>
         <button className="link" onClick={onClose}>Назад к камере</button>
       </div>
     );
@@ -172,11 +180,10 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
         <>
           {isStaff ? (
             <div className="foreman-interface">
-              {/* Секция создания задачи */}
-              {availableTasks.length === 0 && (
-                <div className="create-task-section">
-                  {showCreateForm ? (
-                    <form className="work-form">
+              
+              <div className="create-task-section">
+                {showCreateForm ? (
+                  <form className="work-form">
                       <input
                         type="text"
                         name="name"
@@ -198,19 +205,17 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
                           Отмена
                         </button>
                       </div>
-                    </form>
-                  ) : (
-                    <button 
-                      className="link create-task-button"
-                      onClick={() => setShowCreateForm(true)}
-                    >
-                      Создать новую задачу
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Список работ на оценку */}
+                      </form>
+                ) : (
+                  <button 
+                    className="link create-task-button"
+                    onClick={() => setShowCreateForm(true)}
+                  >
+                    Создать новую задачу
+                  </button>
+                )}
+              </div>
+              
               {worksWithoutReviews.length > 0 && (
                 <>
                   <h3>Работы на оценку</h3>
