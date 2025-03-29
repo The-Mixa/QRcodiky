@@ -60,7 +60,8 @@ export default function TodoPage({ isStaff }) {
         <>
         <h2>Все работы на оценку</h2>
         <WorkListReview 
-          works={tasks}
+          canMakeAction={false}
+          works={tasks.filter(work => work.end_time && work.start_time && !work.review)}
           onWorkSelect={(id) => {/* Обработка выбора */}}
         />
         </>
@@ -68,7 +69,8 @@ export default function TodoPage({ isStaff }) {
         <>
         <h2>Все задачи</h2>
         <WorkList 
-          works={tasks}
+          canMakeAction={false}
+          works={tasks.filter(work => !work.end_time)}
           onWorkSelect={(id) => {/* Обработка выбора */}}
           color="red
           " 

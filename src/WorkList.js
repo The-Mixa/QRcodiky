@@ -6,7 +6,7 @@ import './App.css';
 import arrow from "./unwrap-green 1.svg";
 import ImageGallery from './ImageGalery';
 
-const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart}) => {
+const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart, canMakeAction = true}) => {
   const [expandedWork, setExpandedWork] = useState(null);
   const [workDetails, setWorkDetails] = useState({});
   const [loadingDetails, setLoadingDetails] = useState(false);
@@ -31,7 +31,14 @@ console.log(works);
       );
       
       // Обновляем локальные данные
-      const updatedDetails = { ...workDetails[workId], start_time: new Date().toISOString() };
+      const updatedDetails = { 
+        ...workDetails[workId], 
+        start_time: new Date().toLocaleDateString('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }).replace(/\//g, '.')
+      };
       setWorkDetails(prev => ({ ...prev, [workId]: updatedDetails }));
       
       // Уведомляем родительский компонент
@@ -84,8 +91,12 @@ console.log(works);
           {details.start_time &&
           <p><strong>Дата начала:</strong> {details?.start_time || "Не указано"}</p>
           }
+
           <p><strong>Описание:</strong> {details.description || 'Нет описания'}</p>
-          {!details.start_time && !isStaff &&
+
+
+          {!details.start_time && !isStaff && canMakeAction &&
+
             <button 
               className="start-work-button"
               onClick={() => handleStartWork(workId)}

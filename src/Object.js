@@ -254,4 +254,3 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     </div>
   );
 }
-
