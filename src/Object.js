@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import WorkList from './WorkList';
 import WorkListReview from './WorkListReview';
@@ -33,61 +33,63 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
       setError(403);
     }
   };
-
-  useEffect(() => {
-    document.body.classList.add('modal-open');
-    return () => document.body.classList.remove('modal-open');
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const authConfig = await getAuthHeader();
-      
-      const statusResponse = await axios.get(
-        `${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`,
-        authConfig
-      );
-      setObjectStatus(statusResponse.data);
-      if (objectStatus.work){
-        availableTasks.push(objectStatus.work);
+  
+    const fetchData = useCallback(async () => {
+      try {
+        const authConfig = await getAuthHeader();
+        const startTime = Date.now(); // Для отладки
+  
+        // Основные параллельные запросы
+        const [statusResponse, historyResponse, tasksResponse] = await Promise.all([
+          axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/status/${objectId}/`, authConfig),
+          axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`, authConfig),
+          axios.get(`${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`, authConfig),
+        ]);
+  
+        // Объединение данных
+        const combinedTasks = [
+          ...tasksResponse.data,
+          ...(statusResponse.data.work ? [statusResponse.data.work] : [])
+        ].filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+  
+        // Пакетное обновление состояния
+        setObjectStatus(statusResponse.data);
+        setWorkHistory(historyResponse.data);
+        
+        setCurrentTasks(combinedTasks.filter(work => work.start_time && !work.end_time));
+        setAvailableTasks(combinedTasks.filter(work => !work.start_time && !work.end_time));
+  
+        // Отдельный запрос только для прораба
+        if (isStaff) {
+          const worksResponse = await axios.get(
+            `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
+            authConfig
+          );
+          setWorksWithoutReviews(worksResponse.data);
+        }
+  
+        console.log(`Data fetched in ${Date.now() - startTime}ms`); // Отладка
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setError(error.response?.status || 500);
+      } finally {
+        setLoading(false);
       }
-
-      const historyResponse = await axios.get(
-        `${process.env.REACT_APP_HOST}/api/v1/object/work-history/${objectId}/`,
-        authConfig
-      );
-      setWorkHistory(historyResponse.data);
-
-      const tasksResponse = await axios.get(
-        `${process.env.REACT_APP_HOST}/api/v1/object/work-free/${objectId}/`,
-        authConfig
-      );
+    }, [objectId, isStaff]);
+  
+    useEffect(() => {
+      const controller = new AbortController();
       
-      const current = tasksResponse.data.filter(work => work.start_time && !work.end_time);
-      setCurrentTasks(current);
-
-      const available = tasksResponse.data.filter(work => !work.start_time && !work.end_time);
-      setAvailableTasks(available);
-
-      if (isStaff) {
-        const worksResponse = await axios.get(
-          `${process.env.REACT_APP_HOST}/api/v1/object/works_without_reviews/${objectId}/`,
-          authConfig
-        );
-        setWorksWithoutReviews(worksResponse.data);
-      }
-
-    } catch (error) {
-      console.error(error);
-      setError(error.response?.status || 500);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [objectId, isStaff, fetchTrigger]);
+      const loadData = async () => {
+        setLoading(true);
+        await fetchData();
+      };
+  
+      loadData();
+      return () => controller.abort();
+    }, [fetchData, fetchTrigger]); // Только эти зависимости
+  
+    
 
   const handleCompleteTask = () => {
     setFetchTrigger(prev => prev + 1);
@@ -252,4 +254,3 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
     </div>
   );
 }
-

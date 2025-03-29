@@ -4,7 +4,7 @@ import { refresh } from './refresh';
 import './App.css';
 import arrow from "./unwrap-green 1.svg";
 
-const WorkListReview = ({ works, isStaff, onWorkSelect }) => {
+const WorkListReview = ({ works, isStaff, onWorkSelect, canMakeAction = true }) => {
   const [expandedWork, setExpandedWork] = useState(null);
   const [workDetails, setWorkDetails] = useState({});
   const [loadingDetails, setLoadingDetails] = useState(false);
