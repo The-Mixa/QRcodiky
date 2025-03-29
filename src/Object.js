@@ -233,6 +233,7 @@ export default function ObjectDetails({ isStaff, objectId, onClose }) {
                   workId={currentTasks[0].id}
                   onComplete={handleCompleteTask}
                 />
+                
               ) : (
                 <div className="tasks-section">
                   {availableTasks.length > 0 ? (
