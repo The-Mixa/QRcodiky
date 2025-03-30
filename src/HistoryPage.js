@@ -56,7 +56,7 @@ export default function HistoryPage() {
       <h2>История работ</h2>
       
       <WorkList 
-        works={works}
+        works={works.reverse()}
         onWorkSelect={(id) => {/* Обработка выбора */}}
         color="#12b504"
       />
