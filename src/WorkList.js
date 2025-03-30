@@ -89,6 +89,8 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart
           {details.start_time &&
           <p><strong>Дата начала:</strong> {details?.start_time.substring(0, 10) || "Не указано"}</p>
           }
+          {details.end_time && 
+            <p><strong>Дата завершения:</strong> {details?.end_time.substring(0, 10) || "Не указано"}</p>}
           {!details.start_time && !isStaff && canMakeAction &&
             <button 
               className="start-work-button"
@@ -98,9 +100,6 @@ const WorkList = ({ works, isStaff, onWorkSelect, color = '#4CAF50', onWorkStart
             </button>
           
           }
-          {details.end_time && 
-            <p><strong>Дата завершения:</strong> {details?.end_time.substring(0, 10) || "Не указано"}</p>}
-          <p><strong>Описание:</strong> {details.description || 'Нет описания'}</p>
           
           {details.review && (
             <>

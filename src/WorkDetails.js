@@ -79,9 +79,6 @@ const WorkDetails = ({ workId, isStaff, setTitle, onBack }) => {
     <div className="work-details-container">
       {isStaff ? (
         <div className="staff-review-section">
-          <button onClick={onBack} className='back-button'>
-            <img src={backArrow} alt="Назад"></img>
-          </button>
 
           <div className='object-info' style={{ backgroundColor: "#6E9EB0", color: "white"}}>
             <h2>Оценка</h2>
